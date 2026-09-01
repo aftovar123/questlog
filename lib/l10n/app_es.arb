@@ -1,0 +1,9 @@
+{
+  "@@locale": "es",
+  "appTitle": "Questlog",
+  "gamesListTitle": "Juegos",
+  "searchHint": "Buscar un juego...",
+  "emptyGamesMessage": "No se encontraron juegos.",
+  "loadingLabel": "Cargando juegos...",
+  "retryLabel": "Reintentar"
+}
