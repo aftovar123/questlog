@@ -55,9 +55,15 @@ class _GamesListPageState extends State<GamesListPage> {
             Expanded(
               child: BlocBuilder<GamesCubit, GamesState>(
                 builder: (context, state) => switch (state) {
-                  GamesInitial() || GamesLoading() =>
-                    Center(child: Text(l10n.loadingLabel)),
-                  GamesEmpty() => Center(child: Text(l10n.emptyGamesMessage)),
+                  GamesInitial() || GamesLoading() => _StatusView(
+                    icon: Icons.sports_esports_rounded,
+                    message: l10n.loadingLabel,
+                    spinning: true,
+                  ),
+                  GamesEmpty() => _StatusView(
+                    icon: Icons.search_off_rounded,
+                    message: l10n.emptyGamesMessage,
+                  ),
                   GamesFailed(:final message) => _ErrorView(
                     message: message,
                     retryLabel: l10n.retryLabel,
@@ -71,7 +77,7 @@ class _GamesListPageState extends State<GamesListPage> {
                           crossAxisCount: 2,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
-                          childAspectRatio: 0.7,
+                          childAspectRatio: 0.68,
                         ),
                     itemCount: games.length,
                     itemBuilder: (context, index) =>
@@ -82,6 +88,43 @@ class _GamesListPageState extends State<GamesListPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StatusView extends StatelessWidget {
+  const _StatusView({
+    required this.icon,
+    required this.message,
+    this.spinning = false,
+  });
+
+  final IconData icon;
+  final String message;
+  final bool spinning;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (spinning)
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(color: scheme.primary, strokeWidth: 3),
+            )
+          else
+            Icon(icon, size: 44, color: scheme.onSurfaceVariant),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ],
       ),
     );
   }
@@ -100,14 +143,24 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message, textAlign: TextAlign.center),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: onRetry, child: Text(retryLabel)),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.cloud_off_rounded, size: 44, color: scheme.error),
+            const SizedBox(height: 14),
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(retryLabel),
+            ),
+          ],
+        ),
       ),
     );
   }
