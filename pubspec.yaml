@@ -55,6 +55,9 @@ dependencies:
   # Value equality for entities/states without boilerplate
   equatable: ^2.0.5
 
+  # Custom typography (Rajdhani for display, Manrope for body)
+  google_fonts: ^6.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
