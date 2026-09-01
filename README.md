@@ -52,17 +52,6 @@ flutter analyze
 7 tests: 2 de caso de uso (repositorio mockeado con mocktail), 3 de `GamesCubit`
 (con `bloc_test`, cubriendo éxito/vacío/error), 2 de parseo de `GameModel.fromJson`.
 
-## Nota conocida: portadas en gris al correr en Chrome/web
-
-`Image.network` muestra un placeholder gris para las portadas cuando se corre
-con `flutter run -d chrome` o `-d web-server`. La API sí devuelve las URLs
-correctamente — es que el renderer web de Flutter (CanvasKit) decodifica las
-imágenes vía `fetch()` y necesita que el servidor envíe cabeceras CORS; el CDN
-de RAWG (`media.rawg.io`) no las envía. Es una limitación conocida de
-Flutter Web con imágenes de terceros sin CORS, no un bug de esta app — en
-Android/iOS (la plataforma real objetivo) la carga nativa de imágenes no
-depende de CORS y esto no ocurre.
-
 ## Qué falta (v2, fuera de alcance de esta v1)
 
 - Pantalla de detalle trae los datos ya cargados vía navegación (`extra`), no
