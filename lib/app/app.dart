@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:questlog/app/router.dart';
+import 'package:questlog/app/theme.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
 
 class QuestlogApp extends StatelessWidget {
@@ -10,7 +11,9 @@ class QuestlogApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Questlog',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true),
+      themeMode: ThemeMode.system,
+      theme: buildQuestlogTheme(Brightness.light),
+      darkTheme: buildQuestlogTheme(Brightness.dark),
       routerConfig: appRouter,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
