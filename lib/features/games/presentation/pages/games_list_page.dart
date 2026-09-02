@@ -145,7 +145,13 @@ class _GamesListPageState extends State<GamesListPage> {
                         retryLabel: l10n.retryLabel,
                         onRetry: _reload,
                       ),
-                      GamesLoaded(:final games) => GameCarousel(games: games),
+                      GamesLoaded(:final games, :final hasMore, :final isLoadingMore) =>
+                        GameCarousel(
+                          games: games,
+                          hasMore: hasMore,
+                          isLoadingMore: isLoadingMore,
+                          onLoadMore: _cubit.loadMore,
+                        ),
                     },
                   ),
                 ),

@@ -21,11 +21,21 @@ final class GamesEmpty extends GamesState {
 }
 
 final class GamesLoaded extends GamesState {
-  const GamesLoaded(this.games);
+  const GamesLoaded(this.games, {this.hasMore = false, this.isLoadingMore = false});
   final List<Game> games;
+  final bool hasMore;
+  final bool isLoadingMore;
+
+  GamesLoaded copyWith({List<Game>? games, bool? hasMore, bool? isLoadingMore}) {
+    return GamesLoaded(
+      games ?? this.games,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
 
   @override
-  List<Object?> get props => [games];
+  List<Object?> get props => [games, hasMore, isLoadingMore];
 }
 
 final class GamesFailed extends GamesState {
