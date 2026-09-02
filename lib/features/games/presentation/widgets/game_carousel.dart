@@ -92,7 +92,13 @@ class _GameCarouselState extends State<GameCarousel> {
                   ),
                 );
               }
-              return SizedBox(width: _cardWidth, child: GameGridItem(game: widget.games[index]));
+              // Align (not a plain SizedBox) so the card sizes to its own
+              // content instead of stretching to the row's full 280px —
+              // otherwise the hover border stretches down with it.
+              return Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(width: _cardWidth, child: GameGridItem(game: widget.games[index])),
+              );
             },
           ),
           Positioned(left: 0, child: _CarouselArrow(icon: Icons.chevron_left_rounded, onTap: () => _scrollBy(-(_cardWidth + _cardSpacing) * 3))),

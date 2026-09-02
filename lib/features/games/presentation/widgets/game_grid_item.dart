@@ -42,6 +42,7 @@ class _GameGridItemState extends State<GameGridItem> {
           borderRadius: BorderRadius.circular(8),
           onTap: () => context.push('/games/${widget.game.id}', extra: widget.game),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
