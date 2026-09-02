@@ -26,4 +26,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get retryLabel => 'Reintentar';
+
+  @override
+  String get allGenresLabel => 'Todos';
+
+  @override
+  String get genresLabel => 'Géneros';
+
+  @override
+  String get platformsLabel => 'Plataformas';
+
+  @override
+  String get aboutLabel => 'Acerca de';
+
+  @override
+  String get readMoreLabel => 'Leer más';
+
+  @override
+  String get readLessLabel => 'Leer menos';
 }

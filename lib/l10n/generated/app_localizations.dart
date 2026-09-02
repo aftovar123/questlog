@@ -133,6 +133,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retryLabel;
+
+  /// No description provided for @allGenresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allGenresLabel;
+
+  /// No description provided for @genresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Genres'**
+  String get genresLabel;
+
+  /// No description provided for @platformsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Platforms'**
+  String get platformsLabel;
+
+  /// No description provided for @aboutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutLabel;
+
+  /// No description provided for @readMoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMoreLabel;
+
+  /// No description provided for @readLessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Read less'**
+  String get readLessLabel;
 }
 
 class _AppLocalizationsDelegate

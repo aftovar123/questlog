@@ -7,6 +7,18 @@ import 'package:questlog/features/games/presentation/cubit/games_state.dart';
 import 'package:questlog/features/games/presentation/widgets/game_grid_item.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
 
+/// A small curated subset of RAWG genre slugs — enough to make the list
+/// filterable without a second endpoint just to populate a chip row.
+const _genreOptions = <(String slug, String label)>[
+  ('action', 'Action'),
+  ('role-playing-games-rpg', 'RPG'),
+  ('adventure', 'Adventure'),
+  ('shooter', 'Shooter'),
+  ('strategy', 'Strategy'),
+  ('indie', 'Indie'),
+  ('puzzle', 'Puzzle'),
+];
+
 class GamesListPage extends StatefulWidget {
   const GamesListPage({super.key});
 
@@ -17,6 +29,7 @@ class GamesListPage extends StatefulWidget {
 class _GamesListPageState extends State<GamesListPage> {
   late final GamesCubit _cubit;
   final _searchController = TextEditingController();
+  String? _selectedGenre;
 
   @override
   void initState() {
@@ -31,6 +44,10 @@ class _GamesListPageState extends State<GamesListPage> {
     super.dispose();
   }
 
+  void _reload() {
+    _cubit.loadGames(search: _searchController.text, genre: _selectedGenre);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -41,17 +58,47 @@ class _GamesListPageState extends State<GamesListPage> {
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
                   hintText: l10n.searchHint,
                   prefixIcon: const Icon(Icons.search),
-                  border: const OutlineInputBorder(),
                 ),
-                onSubmitted: (value) => _cubit.loadGames(search: value),
+                onSubmitted: (_) => _reload(),
               ),
             ),
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: _genreOptions.length + 1,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return ChoiceChip(
+                      label: Text(l10n.allGenresLabel),
+                      selected: _selectedGenre == null,
+                      onSelected: (_) => setState(() {
+                        _selectedGenre = null;
+                        _reload();
+                      }),
+                    );
+                  }
+                  final (slug, label) = _genreOptions[index - 1];
+                  return ChoiceChip(
+                    label: Text(label),
+                    selected: _selectedGenre == slug,
+                    onSelected: (_) => setState(() {
+                      _selectedGenre = slug;
+                      _reload();
+                    }),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
             Expanded(
               child: BlocBuilder<GamesCubit, GamesState>(
                 builder: (context, state) => switch (state) {
@@ -67,8 +114,7 @@ class _GamesListPageState extends State<GamesListPage> {
                   GamesFailed(:final message) => _ErrorView(
                     message: message,
                     retryLabel: l10n.retryLabel,
-                    onRetry: () =>
-                        _cubit.loadGames(search: _searchController.text),
+                    onRetry: _reload,
                   ),
                   GamesLoaded(:final games) => GridView.builder(
                     padding: const EdgeInsets.all(12),

@@ -5,5 +5,11 @@
   "searchHint": "Buscar un juego...",
   "emptyGamesMessage": "No se encontraron juegos.",
   "loadingLabel": "Cargando juegos...",
-  "retryLabel": "Reintentar"
+  "retryLabel": "Reintentar",
+  "allGenresLabel": "Todos",
+  "genresLabel": "Géneros",
+  "platformsLabel": "Plataformas",
+  "aboutLabel": "Acerca de",
+  "readMoreLabel": "Leer más",
+  "readLessLabel": "Leer menos"
 }

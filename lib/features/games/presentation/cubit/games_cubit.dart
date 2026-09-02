@@ -7,9 +7,9 @@ class GamesCubit extends Cubit<GamesState> {
   GamesCubit(this._getGames) : super(const GamesInitial());
   final GetGames _getGames;
 
-  Future<void> loadGames({String? search}) async {
+  Future<void> loadGames({String? search, String? genre}) async {
     emit(const GamesLoading());
-    final result = await _getGames(search: search);
+    final result = await _getGames(search: search, genre: genre);
     switch (result) {
       case Ok(:final value):
         emit(value.isEmpty ? const GamesEmpty() : GamesLoaded(value));

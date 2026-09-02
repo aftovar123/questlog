@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:questlog/app/theme.dart';
+import 'package:questlog/core/widgets/fading_network_image.dart';
 import 'package:questlog/features/games/domain/entities/game.dart';
 
 class GameGridItem extends StatelessWidget {
@@ -22,14 +23,7 @@ class GameGridItem extends StatelessWidget {
           children: [
             Hero(
               tag: 'game-cover-${game.id}',
-              child: game.imageUrl != null
-                  ? Image.network(
-                      game.imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          ColoredBox(color: scheme.surfaceContainerHighest),
-                    )
-                  : ColoredBox(color: scheme.surfaceContainerHighest),
+              child: FadingNetworkImage(imageUrl: game.imageUrl, fit: BoxFit.cover),
             ),
             Positioned.fill(
               child: DecoratedBox(
