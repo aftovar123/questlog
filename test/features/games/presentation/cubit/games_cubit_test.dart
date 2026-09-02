@@ -25,7 +25,7 @@ void main() {
     'emits [GamesLoading, GamesLoaded] when the repository returns games',
     setUp: () {
       when(
-        () => repository.getGames(page: 1, search: null),
+        () => repository.getGames(page: 1, search: null, genre: null),
       ).thenAnswer((_) async => const Ok(games));
     },
     build: () => GamesCubit(getGames),
@@ -37,7 +37,7 @@ void main() {
     'emits [GamesLoading, GamesEmpty] when the repository returns no games',
     setUp: () {
       when(
-        () => repository.getGames(page: 1, search: null),
+        () => repository.getGames(page: 1, search: null, genre: null),
       ).thenAnswer((_) async => const Ok([]));
     },
     build: () => GamesCubit(getGames),
@@ -49,11 +49,23 @@ void main() {
     'emits [GamesLoading, GamesFailed] when the repository fails',
     setUp: () {
       when(
-        () => repository.getGames(page: 1, search: null),
+        () => repository.getGames(page: 1, search: null, genre: null),
       ).thenAnswer((_) async => const Err(NetworkFailure()));
     },
     build: () => GamesCubit(getGames),
     act: (cubit) => cubit.loadGames(),
     expect: () => [const GamesLoading(), isA<GamesFailed>()],
+  );
+
+  blocTest<GamesCubit, GamesState>(
+    'forwards the genre filter to the use case',
+    setUp: () {
+      when(
+        () => repository.getGames(page: 1, search: null, genre: 'action'),
+      ).thenAnswer((_) async => const Ok(games));
+    },
+    build: () => GamesCubit(getGames),
+    act: (cubit) => cubit.loadGames(genre: 'action'),
+    expect: () => [const GamesLoading(), const GamesLoaded(games)],
   );
 }

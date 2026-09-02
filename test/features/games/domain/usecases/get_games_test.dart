@@ -22,7 +22,7 @@ void main() {
 
   test('returns the list of games when the repository succeeds', () async {
     when(
-      () => repository.getGames(page: 1, search: null),
+      () => repository.getGames(page: 1, search: null, genre: null),
     ).thenAnswer((_) async => const Ok(games));
 
     final result = await useCase();
@@ -33,11 +33,21 @@ void main() {
 
   test('propagates the failure when the repository fails', () async {
     when(
-      () => repository.getGames(page: 1, search: null),
+      () => repository.getGames(page: 1, search: null, genre: null),
     ).thenAnswer((_) async => const Err(NetworkFailure()));
 
     final result = await useCase();
 
     expect(result, isA<Err<List<Game>>>());
+  });
+
+  test('forwards the genre filter to the repository', () async {
+    when(
+      () => repository.getGames(page: 1, search: null, genre: 'action'),
+    ).thenAnswer((_) async => const Ok(games));
+
+    final result = await useCase(genre: 'action');
+
+    expect(result, isA<Ok<List<Game>>>());
   });
 }
