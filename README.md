@@ -53,6 +53,13 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   llamada falla, la pantalla se degrada con gracia a los datos que ya tenía.
 - Imágenes con fade-in al cargar (`FadingNetworkImage`) en vez de aparecer de
   golpe, y placeholder consistente si la URL falla.
+- Scroll infinito en el carrusel: al acercarse al final pide la siguiente
+  página y la agrega a la lista (`GamesCubit.loadMore`), sabiendo si hay más
+  por `GamesPage.hasMore` (calculado en el repositorio, no adivinado por la UI).
+- Reentrada protegida: cada `loadGames`/`loadMore` lleva un número de secuencia
+  interno en el Cubit — si el usuario busca o cambia de filtro varias veces
+  seguidas, una respuesta vieja que llega tarde ya no puede pisar el estado de
+  una más reciente. Es el patrón "restartable" hecho a mano, sin necesitar Bloc.
 
 ## Tests
 
@@ -61,15 +68,19 @@ flutter test
 flutter analyze
 ```
 
-15 tests: 5 de casos de uso (`GetGames`, `GetGameDetail`, repositorio mockeado
-con mocktail), 5 de `GamesCubit`/`GameDetailCubit` (con `bloc_test`, cubriendo
-éxito/vacío/error/degradación), 3 de parseo de `GameModel.fromJson`.
+19 tests: 6 de casos de uso (`GetGames`, `GetGameDetail`, repositorio mockeado
+con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con `bloc_test` y un test
+unitario directo, cubriendo éxito/vacío/error/degradación/paginación/reentrada),
+3 de parseo de `GameModel.fromJson`.
 
 ## Qué falta (v2, fuera de alcance de esta v1)
 
 - El "diario" personal (marcar jugado/backlog, calificar, reseñar) con
   persistencia local es la parte que lo hace un Letterboxd de verdad; se dejó
   fuera a propósito para no bloquear tener algo funcional y testeado primero.
-- Paginación infinita en el grid (por ahora solo pide la primera página).
 - El filtro de género usa una lista curada de slugs en vez de traerlos desde
   `/genres` — evita un segundo endpoint solo para poblar una fila de chips.
+- `hasMore` se calcula comparando el tamaño de la página contra `page_size`
+  (RAWG no da un flag barato para esto) — si una página llega exactamente
+  llena pero es la última, se hace una petición extra que vuelve vacía. Es una
+  simplificación consciente, no un descuido.
