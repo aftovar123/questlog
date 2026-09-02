@@ -11,7 +11,9 @@ class QuestlogApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Questlog',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
+      // Dark by default — the catalog art (posters, ratings) reads better
+      // against a dark ground, same convention Letterboxd/Backloggd/Steam use.
+      themeMode: ThemeMode.dark,
       theme: buildQuestlogTheme(Brightness.light),
       darkTheme: buildQuestlogTheme(Brightness.dark),
       routerConfig: appRouter,

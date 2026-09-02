@@ -4,7 +4,7 @@ import 'package:questlog/app/injection.dart';
 import 'package:questlog/features/games/domain/usecases/get_games.dart';
 import 'package:questlog/features/games/presentation/cubit/games_cubit.dart';
 import 'package:questlog/features/games/presentation/cubit/games_state.dart';
-import 'package:questlog/features/games/presentation/widgets/game_grid_item.dart';
+import 'package:questlog/features/games/presentation/widgets/game_carousel.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
 
 /// A small curated subset of RAWG genre slugs — enough to make the list
@@ -51,6 +51,7 @@ class _GamesListPageState extends State<GamesListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
@@ -60,88 +61,97 @@ class _GamesListPageState extends State<GamesListPage> {
             children: [
               const _BrandMark(),
               const SizedBox(width: 10),
-              Text(l10n.gamesListTitle),
+              const Text('Questlog'),
             ],
           ),
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: l10n.searchHint,
-                  prefixIcon: const Icon(Icons.search),
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 980),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: l10n.searchHint,
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                    onSubmitted: (_) => _reload(),
+                  ),
                 ),
-                onSubmitted: (_) => _reload(),
-              ),
-            ),
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: _genreOptions.length + 1,
-                separatorBuilder: (context, index) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return ChoiceChip(
-                      label: Text(l10n.allGenresLabel),
-                      selected: _selectedGenre == null,
-                      onSelected: (_) => setState(() {
-                        _selectedGenre = null;
-                        _reload();
-                      }),
-                    );
-                  }
-                  final (slug, label) = _genreOptions[index - 1];
-                  return ChoiceChip(
-                    label: Text(label),
-                    selected: _selectedGenre == slug,
-                    onSelected: (_) => setState(() {
-                      _selectedGenre = slug;
-                      _reload();
-                    }),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: BlocBuilder<GamesCubit, GamesState>(
-                builder: (context, state) => switch (state) {
-                  GamesInitial() || GamesLoading() => _StatusView(
-                    icon: Icons.sports_esports_rounded,
-                    message: l10n.loadingLabel,
-                    spinning: true,
+                SizedBox(
+                  height: 40,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: _genreOptions.length + 1,
+                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return ChoiceChip(
+                          label: Text(l10n.allGenresLabel),
+                          selected: _selectedGenre == null,
+                          onSelected: (_) => setState(() {
+                            _selectedGenre = null;
+                            _reload();
+                          }),
+                        );
+                      }
+                      final (slug, label) = _genreOptions[index - 1];
+                      return ChoiceChip(
+                        label: Text(label),
+                        selected: _selectedGenre == slug,
+                        onSelected: (_) => setState(() {
+                          _selectedGenre = slug;
+                          _reload();
+                        }),
+                      );
+                    },
                   ),
-                  GamesEmpty() => _StatusView(
-                    icon: Icons.search_off_rounded,
-                    message: l10n.emptyGamesMessage,
-                  ),
-                  GamesFailed(:final message) => _ErrorView(
-                    message: message,
-                    retryLabel: l10n.retryLabel,
-                    onRetry: _reload,
-                  ),
-                  GamesLoaded(:final games) => GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 150,
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 0.48,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                  child: Row(
+                    children: [
+                      Container(width: 4, height: 4, decoration: BoxDecoration(color: scheme.primary, shape: BoxShape.circle)),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.gamesListTitle.toUpperCase(),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          letterSpacing: 1.2,
                         ),
-                    itemCount: games.length,
-                    itemBuilder: (context, index) =>
-                        GameGridItem(game: games[index]),
+                      ),
+                    ],
                   ),
-                },
-              ),
+                ),
+                Expanded(
+                  child: BlocBuilder<GamesCubit, GamesState>(
+                    builder: (context, state) => switch (state) {
+                      GamesInitial() || GamesLoading() => _StatusView(
+                        icon: Icons.sports_esports_rounded,
+                        message: l10n.loadingLabel,
+                        spinning: true,
+                      ),
+                      GamesEmpty() => _StatusView(
+                        icon: Icons.search_off_rounded,
+                        message: l10n.emptyGamesMessage,
+                      ),
+                      GamesFailed(:final message) => _ErrorView(
+                        message: message,
+                        retryLabel: l10n.retryLabel,
+                        onRetry: _reload,
+                      ),
+                      GamesLoaded(:final games) => GameCarousel(games: games),
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
