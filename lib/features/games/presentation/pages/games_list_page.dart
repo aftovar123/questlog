@@ -54,7 +54,16 @@ class _GamesListPageState extends State<GamesListPage> {
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.gamesListTitle)),
+        appBar: AppBar(
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const _BrandMark(),
+              const SizedBox(width: 10),
+              Text(l10n.gamesListTitle),
+            ],
+          ),
+        ),
         body: Column(
           children: [
             Padding(
@@ -117,13 +126,13 @@ class _GamesListPageState extends State<GamesListPage> {
                     onRetry: _reload,
                   ),
                   GamesLoaded(:final games) => GridView.builder(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 0.68,
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 150,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.48,
                         ),
                     itemCount: games.length,
                     itemBuilder: (context, index) =>
@@ -134,6 +143,33 @@ class _GamesListPageState extends State<GamesListPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _BrandMark extends StatelessWidget {
+  const _BrandMark();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colors = [scheme.primary, scheme.secondary, scheme.tertiary];
+    return SizedBox(
+      width: 34,
+      height: 16,
+      child: Stack(
+        children: [
+          for (final (index, color) in colors.indexed)
+            Positioned(
+              left: index * 10.0,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+            ),
+        ],
       ),
     );
   }
