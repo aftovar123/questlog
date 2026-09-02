@@ -35,11 +35,16 @@ class _GameDetailView extends StatelessWidget {
     final ratingColor = RatingColors.forRating(game.rating);
     final isEnriching = state is GameDetailLoading;
 
+    // RAWG art is landscape (~16:9) — sizing the backdrop to that ratio
+    // (instead of a fixed height) keeps the crop close to nothing, rather
+    // than slicing off whatever sits above dead-center in a taller box.
+    final backdropHeight = (MediaQuery.sizeOf(context).width * 9 / 16).clamp(200.0, 420.0);
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 320,
+            expandedHeight: backdropHeight,
             pinned: true,
             backgroundColor: scheme.surface,
             flexibleSpace: FlexibleSpaceBar(
@@ -50,14 +55,34 @@ class _GameDetailView extends StatelessWidget {
                     tag: 'game-cover-${game.id}',
                     child: FadingNetworkImage(imageUrl: game.imageUrl, fit: BoxFit.cover),
                   ),
+                  // Bottom fade — blends the backdrop into the page below it.
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          stops: const [0.4, 1.0],
+                          stops: const [0.55, 1.0],
                           colors: [Colors.black.withValues(alpha: 0), scheme.surface],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Side fades — the Letterboxd-style vignette so the image
+                  // reads as a backdrop, not a hard-edged rectangle.
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          stops: const [0.0, 0.18, 0.82, 1.0],
+                          colors: [
+                            scheme.surface,
+                            Colors.black.withValues(alpha: 0),
+                            Colors.black.withValues(alpha: 0),
+                            scheme.surface,
+                          ],
                         ),
                       ),
                     ),

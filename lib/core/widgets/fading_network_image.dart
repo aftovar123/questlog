@@ -3,10 +3,21 @@ import 'package:flutter/material.dart';
 /// A network image that fades in once its first frame decodes, instead of
 /// popping in abruptly, and falls back to a plain surface tile on error.
 class FadingNetworkImage extends StatelessWidget {
-  const FadingNetworkImage({required this.imageUrl, required this.fit, super.key});
+  const FadingNetworkImage({
+    required this.imageUrl,
+    required this.fit,
+    this.alignment = Alignment.topCenter,
+    super.key,
+  });
 
   final String? imageUrl;
   final BoxFit fit;
+
+  /// RAWG's art is landscape (screenshots/key art) but our tiles are often
+  /// taller than that — cropping from the top keeps faces/heads, which
+  /// usually sit in the upper half of the frame, instead of slicing through
+  /// them the way a centered crop does.
+  final Alignment alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +27,7 @@ class FadingNetworkImage extends StatelessWidget {
     return Image.network(
       imageUrl!,
       fit: fit,
+      alignment: alignment,
       errorBuilder: (context, error, stackTrace) => ColoredBox(color: placeholderColor),
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
