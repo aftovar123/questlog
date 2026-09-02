@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:questlog/core/result.dart';
 import 'package:questlog/features/games/data/datasources/games_remote_data_source.dart';
 import 'package:questlog/features/games/domain/entities/game.dart';
+import 'package:questlog/features/games/domain/entities/games_page.dart';
 import 'package:questlog/features/games/domain/repositories/games_repository.dart';
 
 class GamesRepositoryImpl implements GamesRepository {
@@ -9,7 +10,7 @@ class GamesRepositoryImpl implements GamesRepository {
   final GamesRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<List<Game>>> getGames({
+  Future<Result<GamesPage>> getGames({
     int page = 1,
     String? search,
     String? genre,
@@ -20,7 +21,10 @@ class GamesRepositoryImpl implements GamesRepository {
         search: search,
         genre: genre,
       );
-      return Ok(games);
+      // RAWG doesn't hand us a cheap "is this the last page" flag here, so a
+      // short page is the signal: if it came back full, there's probably more.
+      final hasMore = games.length == GamesRemoteDataSource.pageSize;
+      return Ok(GamesPage(games: games, hasMore: hasMore));
     } on DioException catch (error) {
       return Err(_mapError(error));
     } catch (_) {
