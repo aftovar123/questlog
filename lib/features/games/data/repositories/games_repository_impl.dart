@@ -9,10 +9,30 @@ class GamesRepositoryImpl implements GamesRepository {
   final GamesRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Result<List<Game>>> getGames({int page = 1, String? search}) async {
+  Future<Result<List<Game>>> getGames({
+    int page = 1,
+    String? search,
+    String? genre,
+  }) async {
     try {
-      final games = await _remoteDataSource.fetchGames(page: page, search: search);
+      final games = await _remoteDataSource.fetchGames(
+        page: page,
+        search: search,
+        genre: genre,
+      );
       return Ok(games);
+    } on DioException catch (error) {
+      return Err(_mapError(error));
+    } catch (_) {
+      return const Err(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<Result<Game>> getGameDetail(int id) async {
+    try {
+      final game = await _remoteDataSource.fetchGameDetail(id);
+      return Ok(game);
     } on DioException catch (error) {
       return Err(_mapError(error));
     } catch (_) {

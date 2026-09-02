@@ -7,6 +7,9 @@ class Game extends Equatable {
     required this.imageUrl,
     required this.rating,
     this.releaseDate,
+    this.genres = const [],
+    this.platforms = const [],
+    this.description,
   });
 
   final int id;
@@ -14,7 +17,19 @@ class Game extends Equatable {
   final String? imageUrl;
   final double rating;
   final DateTime? releaseDate;
+  final List<String> genres;
+  final List<String> platforms;
+  final String? description;
 
   @override
-  List<Object?> get props => [id, name, imageUrl, rating, releaseDate];
+  List<Object?> get props => [
+    id,
+    name,
+    imageUrl,
+    rating,
+    releaseDate,
+    genres,
+    platforms,
+    description,
+  ];
 }
