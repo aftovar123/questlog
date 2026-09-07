@@ -78,13 +78,17 @@ flutter test
 flutter analyze
 ```
 
-33 tests: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`, repositorio
-mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con `bloc_test` y
-un test unitario directo, cubriendo éxito/vacío/error/degradación/paginación/
-reentrada), 3 de parseo de `GameModel.fromJson`, y 14 de `diary` (casos de uso
-y `DiaryCubit` mockeados con mocktail/bloc_test, más el repositorio contra una
-instancia real de Hive vía `hive_test` — ahí sí importa probar la persistencia
-en sí, no un mock de ella).
+44 tests en 4 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
+`bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
+paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 14 de `diary`
+(casos de uso y `DiaryCubit` mockeados con mocktail/bloc_test, más el
+repositorio contra una instancia real de Hive vía `hive_test` — ahí sí importa
+probar la persistencia en sí, no un mock de ella), y 11 de widgets con
+`testWidgets`: `GameCarousel` (renderizado, paginación al hacer scroll) y
+`DiarySection` (estados de carga/guardado/error, y que tocar un chip, una
+estrella o "Guardar nota" llama al método correcto de `DiaryCubit` con el
+argumento correcto — mockeado con `MockCubit`/`whenListen` de `bloc_test`).
 
 ## Qué falta
 
