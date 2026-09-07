@@ -15,6 +15,14 @@ final class Err<T> extends Result<T> {
   final Failure failure;
 }
 
+/// A concrete stand-in for "no meaningful value" — `void` can't be used as
+/// a generic type argument's actual value, so operations that only succeed
+/// or fail (like saving to the diary) return `Result<Unit>` instead.
+final class Unit {
+  const Unit._();
+  static const instance = Unit._();
+}
+
 sealed class Failure {
   const Failure(this.message);
   final String message;
@@ -30,4 +38,8 @@ final class ServerFailure extends Failure {
 
 final class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'Ocurrió un error inesperado.']);
+}
+
+final class StorageFailure extends Failure {
+  const StorageFailure([super.message = 'No se pudo guardar en el dispositivo.']);
 }
