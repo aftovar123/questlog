@@ -16,6 +16,10 @@ lib/
       domain/       # Game (entidad), GamesRepository (contrato), GetGames / GetGameDetail (casos de uso)
       data/         # GameModel, GamesRemoteDataSource (RAWG), GamesRepositoryImpl
       presentation/ # GamesCubit / GameDetailCubit + estados, páginas y widgets
+    diary/
+      domain/       # PlayStatus, DiaryEntry (entidad), DiaryRepository (contrato), casos de uso
+      data/         # DiaryEntryModel, DiaryLocalDataSource (Hive), DiaryRepositoryImpl
+      presentation/ # DiaryCubit + estado, DiarySection (chips de estado, estrellas, nota)
   l10n/           # app_en.arb / app_es.arb + código generado (gen-l10n)
 ```
 
@@ -60,6 +64,12 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   interno en el Cubit — si el usuario busca o cambia de filtro varias veces
   seguidas, una respuesta vieja que llega tarde ya no puede pisar el estado de
   una más reciente. Es el patrón "restartable" hecho a mano, sin necesitar Bloc.
+- Diario personal (v2): en el detalle de cada juego se puede marcar
+  Backlog/Jugando/Completado, calificar de 1 a 5 estrellas y escribir una
+  nota, persistido localmente con Hive (no `sqflite`, para que también
+  funcione en Flutter Web vía IndexedDB). `DiaryCubit` espera su propia carga
+  inicial (`_ready`) antes de aplicar cualquier actualización, para que una
+  interacción muy rápida justo al abrir la pantalla no se pierda en silencio.
 
 ## Tests
 
@@ -68,16 +78,16 @@ flutter test
 flutter analyze
 ```
 
-19 tests: 6 de casos de uso (`GetGames`, `GetGameDetail`, repositorio mockeado
-con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con `bloc_test` y un test
-unitario directo, cubriendo éxito/vacío/error/degradación/paginación/reentrada),
-3 de parseo de `GameModel.fromJson`.
+33 tests: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`, repositorio
+mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con `bloc_test` y
+un test unitario directo, cubriendo éxito/vacío/error/degradación/paginación/
+reentrada), 3 de parseo de `GameModel.fromJson`, y 14 de `diary` (casos de uso
+y `DiaryCubit` mockeados con mocktail/bloc_test, más el repositorio contra una
+instancia real de Hive vía `hive_test` — ahí sí importa probar la persistencia
+en sí, no un mock de ella).
 
-## Qué falta (v2, fuera de alcance de esta v1)
+## Qué falta
 
-- El "diario" personal (marcar jugado/backlog, calificar, reseñar) con
-  persistencia local es la parte que lo hace un Letterboxd de verdad; se dejó
-  fuera a propósito para no bloquear tener algo funcional y testeado primero.
 - El filtro de género usa una lista curada de slugs en vez de traerlos desde
   `/genres` — evita un segundo endpoint solo para poblar una fila de chips.
 - `hasMore` se calcula comparando el tamaño de la página contra `page_size`
