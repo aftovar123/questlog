@@ -3,7 +3,11 @@
 Catálogo de videojuegos hecho en Flutter, pensado como proyecto de práctica —
 la idea de fondo ("Letterboxd para videojuegos") es más grande; esta v1 se
 recorta a demostrar Clean Architecture, manejo de estado con Cubit, consumo
-real de API con Dio, y testing en tres capas.
+real de API con Dio, persistencia local con Hive, y testing en varias capas.
+
+| Catálogo | Detalle + diario |
+|---|---|
+| ![Lista de juegos con búsqueda y filtro por género](docs/screenshots/games-list.png) | ![Detalle de un juego con el diario personal: estado, calificación y nota](docs/screenshots/game-detail-diary.png) |
 
 ## Arquitectura
 
