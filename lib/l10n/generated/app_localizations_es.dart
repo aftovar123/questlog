@@ -44,4 +44,31 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get readLessLabel => 'Leer menos';
+
+  @override
+  String get diaryTitle => 'Mi diario';
+
+  @override
+  String get diaryStatusBacklog => 'Backlog';
+
+  @override
+  String get diaryStatusPlaying => 'Jugando';
+
+  @override
+  String get diaryStatusCompleted => 'Completado';
+
+  @override
+  String get diaryRatingLabel => 'Calificación';
+
+  @override
+  String get diaryNoteHint => 'Escribe una reseña o nota personal...';
+
+  @override
+  String get diarySaveNoteLabel => 'Guardar nota';
+
+  @override
+  String get diarySavedLabel => 'Guardado';
+
+  @override
+  String get diaryErrorLabel => 'No se pudo guardar. Intenta de nuevo.';
 }

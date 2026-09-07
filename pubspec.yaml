@@ -58,6 +58,10 @@ dependencies:
   # Custom typography (Rajdhani for display, Manrope for body)
   google_fonts: ^6.2.1
 
+  # Local persistence for the personal diary (works on web too, unlike sqflite)
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -74,6 +78,9 @@ dev_dependencies:
 
   # Mocking for repository/use-case tests
   mocktail: ^1.0.4
+
+  # Real (temp-file-backed) Hive instance for repository tests
+  hive_test: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -169,6 +169,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Read less'**
   String get readLessLabel;
+
+  /// No description provided for @diaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My diary'**
+  String get diaryTitle;
+
+  /// No description provided for @diaryStatusBacklog.
+  ///
+  /// In en, this message translates to:
+  /// **'Backlog'**
+  String get diaryStatusBacklog;
+
+  /// No description provided for @diaryStatusPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing'**
+  String get diaryStatusPlaying;
+
+  /// No description provided for @diaryStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get diaryStatusCompleted;
+
+  /// No description provided for @diaryRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get diaryRatingLabel;
+
+  /// No description provided for @diaryNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a review or personal note...'**
+  String get diaryNoteHint;
+
+  /// No description provided for @diarySaveNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save note'**
+  String get diarySaveNoteLabel;
+
+  /// No description provided for @diarySavedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get diarySavedLabel;
+
+  /// No description provided for @diaryErrorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Try again.'**
+  String get diaryErrorLabel;
 }
 
 class _AppLocalizationsDelegate

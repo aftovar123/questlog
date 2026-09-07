@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:questlog/app/injection.dart';
 import 'package:questlog/app/theme.dart';
 import 'package:questlog/core/widgets/fading_network_image.dart';
+import 'package:questlog/features/diary/domain/usecases/get_diary_entry.dart';
+import 'package:questlog/features/diary/domain/usecases/save_diary_entry.dart';
+import 'package:questlog/features/diary/presentation/cubit/diary_cubit.dart';
+import 'package:questlog/features/diary/presentation/widgets/diary_section.dart';
 import 'package:questlog/features/games/domain/entities/game.dart';
 import 'package:questlog/features/games/domain/usecases/get_game_detail.dart';
 import 'package:questlog/features/games/presentation/cubit/game_detail_cubit.dart';
@@ -16,8 +20,13 @@ class GameDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => GameDetailCubit(getIt<GetGameDetail>(), game),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => GameDetailCubit(getIt<GetGameDetail>(), game)),
+        BlocProvider(
+          create: (_) => DiaryCubit(getIt<GetDiaryEntry>(), getIt<SaveDiaryEntry>(), game.id),
+        ),
+      ],
       child: const _GameDetailView(),
     );
   }
@@ -135,6 +144,8 @@ class _GameDetailView extends StatelessWidget {
                       ],
                     ],
                   ),
+                  const SizedBox(height: 24),
+                  const DiarySection(),
                   if (game.genres.isNotEmpty) ...[
                     const SizedBox(height: 20),
                     _TagSection(label: l10n.genresLabel, tags: game.genres),

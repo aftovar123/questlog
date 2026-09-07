@@ -11,5 +11,14 @@
   "platformsLabel": "Platforms",
   "aboutLabel": "About",
   "readMoreLabel": "Read more",
-  "readLessLabel": "Read less"
+  "readLessLabel": "Read less",
+  "diaryTitle": "My diary",
+  "diaryStatusBacklog": "Backlog",
+  "diaryStatusPlaying": "Playing",
+  "diaryStatusCompleted": "Completed",
+  "diaryRatingLabel": "Rating",
+  "diaryNoteHint": "Write a review or personal note...",
+  "diarySaveNoteLabel": "Save note",
+  "diarySavedLabel": "Saved",
+  "diaryErrorLabel": "Couldn't save. Try again."
 }
