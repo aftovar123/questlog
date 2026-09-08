@@ -12,6 +12,13 @@ class DiaryLocalDataSource {
     return DiaryEntryModel.fromMap(gameId, map);
   }
 
+  List<DiaryEntryModel> readAll() {
+    return [
+      for (final key in _box.keys)
+        DiaryEntryModel.fromMap(int.parse(key as String), _box.get(key)!),
+    ];
+  }
+
   Future<void> write(DiaryEntryModel entry) {
     return _box.put(entry.gameId.toString(), entry.toMap());
   }

@@ -6,6 +6,7 @@ import 'package:questlog/features/diary/data/datasources/diary_local_data_source
 import 'package:questlog/features/diary/data/repositories/diary_repository_impl.dart';
 import 'package:questlog/features/diary/domain/repositories/diary_repository.dart';
 import 'package:questlog/features/diary/domain/usecases/delete_diary_entry.dart';
+import 'package:questlog/features/diary/domain/usecases/get_all_diary_entries.dart';
 import 'package:questlog/features/diary/domain/usecases/get_diary_entry.dart';
 import 'package:questlog/features/diary/domain/usecases/save_diary_entry.dart';
 import 'package:questlog/features/games/data/datasources/games_remote_data_source.dart';
@@ -33,6 +34,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton(() => DiaryLocalDataSource(diaryBox))
     ..registerLazySingleton<DiaryRepository>(() => DiaryRepositoryImpl(getIt()))
     ..registerFactory(() => GetDiaryEntry(getIt()))
+    ..registerFactory(() => GetAllDiaryEntries(getIt()))
     ..registerFactory(() => SaveDiaryEntry(getIt()))
     ..registerFactory(() => DeleteDiaryEntry(getIt()));
 }

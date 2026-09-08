@@ -18,6 +18,17 @@ class DiaryRepositoryImpl implements DiaryRepository {
   }
 
   @override
+  Future<Result<List<DiaryEntry>>> getAllEntries() async {
+    try {
+      final entries = _localDataSource.readAll()
+        ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+      return Ok(entries);
+    } catch (_) {
+      return const Err(StorageFailure());
+    }
+  }
+
+  @override
   Future<Result<Unit>> saveEntry(DiaryEntry entry) async {
     try {
       await _localDataSource.write(DiaryEntryModel.fromEntity(entry));

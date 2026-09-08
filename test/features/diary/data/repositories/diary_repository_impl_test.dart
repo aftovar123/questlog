@@ -77,6 +77,24 @@ void main() {
     expect((result as Ok<DiaryEntry?>).value, isNull);
   });
 
+  test('getAllEntries returns an empty list when nothing is saved', () async {
+    final result = await repository.getAllEntries();
+
+    expect((result as Ok<List<DiaryEntry>>).value, isEmpty);
+  });
+
+  test('getAllEntries returns every saved entry, most recently updated first', () async {
+    final older = DiaryEntry(gameId: 1, status: PlayStatus.backlog, updatedAt: DateTime(2026, 1, 1));
+    final newer = DiaryEntry(gameId: 2, status: PlayStatus.playing, updatedAt: DateTime(2026, 3, 1));
+
+    await repository.saveEntry(older);
+    await repository.saveEntry(newer);
+    final result = await repository.getAllEntries();
+    final loaded = (result as Ok<List<DiaryEntry>>).value;
+
+    expect(loaded.map((e) => e.gameId), [2, 1]);
+  });
+
   test('entries for different games do not collide', () async {
     final entryA = DiaryEntry(gameId: 1, status: PlayStatus.playing, updatedAt: DateTime(2026, 1, 1));
     final entryB = DiaryEntry(gameId: 2, status: PlayStatus.backlog, updatedAt: DateTime(2026, 1, 1));
