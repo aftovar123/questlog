@@ -83,7 +83,10 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   acoplar sus dominios — lee las entradas de `diary` y les pega los datos de
   cada juego pidiéndolos a `games` en paralelo (`Future.wait`); si la
   enriquecida de un juego puntual falla, esa fila se degrada a un dato
-  genérico en vez de desaparecer de la lista.
+  genérico en vez de desaparecer de la lista. Cada fila se puede deslizar
+  para eliminarla (con confirmación antes de borrar), cerrando el CRUD del
+  diario — `DeleteDiaryEntry` existía en el dominio desde el inicio, pero
+  hasta ahora nada lo usaba.
 
 ## Tests
 
@@ -92,16 +95,17 @@ flutter test
 flutter analyze
 ```
 
-59 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+62 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
-paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 25 de `diary`
+paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 28 de `diary`
 (casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
 — incluyendo que `saveReview` guarda calificación y nota juntas en un solo
 guardado, que una entrada cuya enriquecida de juego falla se degrada en vez
-de romper la lista, y que `DiaryListCubit.load()` descarta una respuesta
-vieja que llega tarde (mismo patrón "restartable" que `GamesCubit`) —, más
-el repositorio contra una instancia real de Hive vía
+de romper la lista, que `DiaryListCubit.load()` descarta una respuesta
+vieja que llega tarde (mismo patrón "restartable" que `GamesCubit`), y que
+`delete()` quita solo la entrada correcta o deja la lista intacta si falla
+—, más el repositorio contra una instancia real de Hive vía
 `hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
 ella), y 15 de widgets con `testWidgets`: `GameCarousel` (renderizado,
 paginación al hacer scroll) y `DiarySection` (estados de carga/guardado/error,
