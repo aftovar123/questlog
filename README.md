@@ -92,14 +92,16 @@ flutter test
 flutter analyze
 ```
 
-58 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+59 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
-paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 24 de `diary`
+paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 25 de `diary`
 (casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
 — incluyendo que `saveReview` guarda calificación y nota juntas en un solo
-guardado, y que una entrada cuya enriquecida de juego falla se degrada en vez
-de romper la lista —, más el repositorio contra una instancia real de Hive vía
+guardado, que una entrada cuya enriquecida de juego falla se degrada en vez
+de romper la lista, y que `DiaryListCubit.load()` descarta una respuesta
+vieja que llega tarde (mismo patrón "restartable" que `GamesCubit`) —, más
+el repositorio contra una instancia real de Hive vía
 `hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
 ella), y 15 de widgets con `testWidgets`: `GameCarousel` (renderizado,
 paginación al hacer scroll) y `DiarySection` (estados de carga/guardado/error,
