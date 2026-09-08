@@ -88,7 +88,7 @@ flutter test
 flutter analyze
 ```
 
-52 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+54 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
 paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 22 de `diary`
@@ -96,11 +96,12 @@ paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 22 de `diary`
 — incluyendo que una entrada cuya enriquecida de juego falla se degrada en vez
 de romper la lista —, más el repositorio contra una instancia real de Hive vía
 `hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
-ella), y 11 de widgets con `testWidgets`: `GameCarousel` (renderizado,
+ella), y 13 de widgets con `testWidgets`: `GameCarousel` (renderizado,
 paginación al hacer scroll) y `DiarySection` (estados de carga/guardado/error,
-y que tocar un chip, una estrella o "Guardar nota" llama al método correcto de
-`DiaryCubit` con el argumento correcto — mockeado con `MockCubit`/`whenListen`
-de `bloc_test`).
+que tocar un chip, una estrella o "Guardar nota" llama al método correcto de
+`DiaryCubit` con el argumento correcto, y que el snackbar de confirmación
+aparece solo cuando el guardado termina sin error — mockeado con
+`MockCubit`/`whenListen` de `bloc_test`).
 
 ## Qué falta
 
