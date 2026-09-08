@@ -23,7 +23,7 @@ lib/
     diary/
       domain/       # PlayStatus, DiaryEntry (entidad), DiaryRepository (contrato), casos de uso
       data/         # DiaryEntryModel, DiaryLocalDataSource (Hive), DiaryRepositoryImpl
-      presentation/ # DiaryCubit + estado, DiarySection (chips de estado, estrellas, nota)
+      presentation/ # DiaryCubit/DiaryListCubit + estados, DiarySection, la pantalla "Mi diario"
   l10n/           # app_en.arb / app_es.arb + código generado (gen-l10n)
 ```
 
@@ -74,6 +74,12 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   funcione en Flutter Web vía IndexedDB). `DiaryCubit` espera su propia carga
   inicial (`_ready`) antes de aplicar cualquier actualización, para que una
   interacción muy rápida justo al abrir la pantalla no se pierda en silencio.
+- Pantalla "Mi diario" (ícono de marcador en el app bar): lista todo lo que
+  marcaste, más reciente primero. `DiaryListCubit` compone dos features sin
+  acoplar sus dominios — lee las entradas de `diary` y les pega los datos de
+  cada juego pidiéndolos a `games` en paralelo (`Future.wait`); si la
+  enriquecida de un juego puntual falla, esa fila se degrada a un dato
+  genérico en vez de desaparecer de la lista.
 
 ## Tests
 
@@ -82,17 +88,19 @@ flutter test
 flutter analyze
 ```
 
-44 tests en 4 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+52 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
-paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 14 de `diary`
-(casos de uso y `DiaryCubit` mockeados con mocktail/bloc_test, más el
-repositorio contra una instancia real de Hive vía `hive_test` — ahí sí importa
-probar la persistencia en sí, no un mock de ella), y 11 de widgets con
-`testWidgets`: `GameCarousel` (renderizado, paginación al hacer scroll) y
-`DiarySection` (estados de carga/guardado/error, y que tocar un chip, una
-estrella o "Guardar nota" llama al método correcto de `DiaryCubit` con el
-argumento correcto — mockeado con `MockCubit`/`whenListen` de `bloc_test`).
+paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 22 de `diary`
+(casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
+— incluyendo que una entrada cuya enriquecida de juego falla se degrada en vez
+de romper la lista —, más el repositorio contra una instancia real de Hive vía
+`hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
+ella), y 11 de widgets con `testWidgets`: `GameCarousel` (renderizado,
+paginación al hacer scroll) y `DiarySection` (estados de carga/guardado/error,
+y que tocar un chip, una estrella o "Guardar nota" llama al método correcto de
+`DiaryCubit` con el argumento correcto — mockeado con `MockCubit`/`whenListen`
+de `bloc_test`).
 
 ## Qué falta
 
