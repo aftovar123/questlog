@@ -37,15 +37,15 @@ class DiaryCubit extends Cubit<DiaryState> {
     return _updateAndSave((current) => current.copyWith(status: status));
   }
 
-  Future<void> updateRating(int rating) {
-    return _updateAndSave((current) => current.copyWith(rating: rating));
-  }
-
-  Future<void> updateNote(String note) {
+  /// Rating and note are saved together, in one call, so tapping through a
+  /// few stars while deciding on a score doesn't fire a save (and a "Saved"
+  /// confirmation) per tap — only the explicit "Save review" action does.
+  Future<void> saveReview({required int rating, required String note}) {
     final trimmed = note.trim();
-    return _updateAndSave(
-      (current) => current.copyWith(note: trimmed, clearNote: trimmed.isEmpty),
-    );
+    return _updateAndSave((current) {
+      final withNote = current.copyWith(note: trimmed, clearNote: trimmed.isEmpty);
+      return rating > 0 ? withNote.copyWith(rating: rating) : withNote;
+    });
   }
 
   Future<void> _updateAndSave(DiaryEntry Function(DiaryEntry current) update) async {

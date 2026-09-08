@@ -49,7 +49,6 @@ class DiarySection extends StatelessWidget {
 
     final loaded = state as DiaryLoaded;
     final status = loaded.entry?.status ?? PlayStatus.backlog;
-    final rating = loaded.entry?.rating ?? 0;
 
     return Container(
       width: double.infinity,
@@ -95,29 +94,11 @@ class DiarySection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Text(
-            l10n.diaryRatingLabel,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-          Row(
-            children: [
-              for (var star = 1; star <= 5; star++)
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () => context.read<DiaryCubit>().updateRating(star),
-                  icon: Icon(
-                    star <= rating ? Icons.star_rounded : Icons.star_border_rounded,
-                    color: star <= rating ? Colors.amber : scheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          _NoteField(
+          _ReviewBlock(
+            initialRating: loaded.entry?.rating ?? 0,
             initialNote: loaded.entry?.note,
-            hint: l10n.diaryNoteHint,
-            saveLabel: l10n.diarySaveNoteLabel,
-            onSave: (text) => context.read<DiaryCubit>().updateNote(text),
+            isSaving: loaded.isSaving,
+            onSave: (rating, note) => context.read<DiaryCubit>().saveReview(rating: rating, note: note),
           ),
         ],
       ),
@@ -125,30 +106,34 @@ class DiarySection extends StatelessWidget {
   }
 }
 
-class _NoteField extends StatefulWidget {
-  const _NoteField({
+/// Rating and note as a single unit: one "Save review" action instead of an
+/// instant save (and a confirmation) per star tap. Once a review exists, it
+/// renders as a read-only, distinctly-colored block with an "Edit" button —
+/// tapping either that button or a star switches back into edit mode.
+class _ReviewBlock extends StatefulWidget {
+  const _ReviewBlock({
+    required this.initialRating,
     required this.initialNote,
-    required this.hint,
-    required this.saveLabel,
+    required this.isSaving,
     required this.onSave,
   });
 
+  final int initialRating;
   final String? initialNote;
-  final String hint;
-  final String saveLabel;
-  final ValueChanged<String> onSave;
+  final bool isSaving;
+  final Future<void> Function(int rating, String note) onSave;
 
   @override
-  State<_NoteField> createState() => _NoteFieldState();
+  State<_ReviewBlock> createState() => _ReviewBlockState();
 }
 
-class _NoteFieldState extends State<_NoteField> {
-  // `late final` on purpose: this widget stays mounted at the same tree
-  // position across DiaryCubit rebuilds, so re-reading initialNote on every
-  // build would stomp on text the player is still typing.
-  late final TextEditingController _controller = TextEditingController(
-    text: widget.initialNote ?? '',
-  );
+class _ReviewBlockState extends State<_ReviewBlock> {
+  // Initialized once from the widget, then mutated locally via setState —
+  // same reasoning as the controller below: re-reading widget.initialRating
+  // on every DiaryCubit rebuild would undo a star tap made before saving.
+  late int _draftRating = widget.initialRating;
+  late final TextEditingController _controller = TextEditingController(text: widget.initialNote ?? '');
+  late bool _editing = widget.initialRating == 0 && (widget.initialNote == null || widget.initialNote!.isEmpty);
 
   @override
   void dispose() {
@@ -156,24 +141,82 @@ class _NoteFieldState extends State<_NoteField> {
     super.dispose();
   }
 
+  void _enterEditMode(int? tappedStar) {
+    setState(() {
+      _editing = true;
+      if (tappedStar != null) _draftRating = tappedStar;
+    });
+  }
+
+  Future<void> _save() async {
+    await widget.onSave(_draftRating, _controller.text);
+    if (mounted) setState(() => _editing = false);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextField(
-          controller: _controller,
-          minLines: 2,
-          maxLines: 4,
-          decoration: InputDecoration(hintText: widget.hint),
+        Text(
+          l10n.diaryRatingLabel,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () => widget.onSave(_controller.text),
-            child: Text(widget.saveLabel),
+        Row(
+          children: [
+            for (var star = 1; star <= 5; star++)
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _enterEditMode(star),
+                icon: Icon(
+                  star <= _draftRating ? Icons.star_rounded : Icons.star_border_rounded,
+                  color: star <= _draftRating ? Colors.amber : scheme.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (_editing) ...[
+          TextField(
+            controller: _controller,
+            minLines: 2,
+            maxLines: 4,
+            decoration: InputDecoration(hintText: l10n.diaryNoteHint),
           ),
-        ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: widget.isSaving ? null : _save,
+              child: Text(l10n.diarySaveReviewLabel),
+            ),
+          ),
+        ] else ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              _controller.text.isEmpty ? l10n.diaryNoteHint : _controller.text,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: scheme.onPrimaryContainer,
+                fontStyle: _controller.text.isEmpty ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => _enterEditMode(null),
+              child: Text(l10n.diaryEditReviewLabel),
+            ),
+          ),
+        ],
       ],
     );
   }

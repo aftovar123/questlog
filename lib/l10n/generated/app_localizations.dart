@@ -206,11 +206,17 @@ abstract class AppLocalizations {
   /// **'Write a review or personal note...'**
   String get diaryNoteHint;
 
-  /// No description provided for @diarySaveNoteLabel.
+  /// No description provided for @diarySaveReviewLabel.
   ///
   /// In en, this message translates to:
-  /// **'Save note'**
-  String get diarySaveNoteLabel;
+  /// **'Save review'**
+  String get diarySaveReviewLabel;
+
+  /// No description provided for @diaryEditReviewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get diaryEditReviewLabel;
 
   /// No description provided for @diarySavedLabel.
   ///

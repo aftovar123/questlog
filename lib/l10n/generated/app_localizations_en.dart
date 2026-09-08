@@ -64,7 +64,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaryNoteHint => 'Write a review or personal note...';
 
   @override
-  String get diarySaveNoteLabel => 'Save note';
+  String get diarySaveReviewLabel => 'Save review';
+
+  @override
+  String get diaryEditReviewLabel => 'Edit';
 
   @override
   String get diarySavedLabel => 'Saved';

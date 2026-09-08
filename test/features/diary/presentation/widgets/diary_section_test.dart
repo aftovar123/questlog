@@ -27,6 +27,7 @@ Future<void> _pump(WidgetTester tester, DiaryCubit cubit) {
 
 void main() {
   late _MockDiaryCubit cubit;
+  final l10n = AppLocalizationsEn();
 
   setUpAll(() {
     registerFallbackValue(PlayStatus.backlog);
@@ -45,7 +46,9 @@ void main() {
     expect(find.byType(ChoiceChip), findsNothing);
   });
 
-  testWidgets('defaults to Backlog selected and no stars filled with no saved entry', (tester) async {
+  testWidgets('with no saved entry, starts in edit mode with Backlog selected and no stars filled', (
+    tester,
+  ) async {
     whenListen(cubit, const Stream<DiaryState>.empty(), initialState: const DiaryLoaded(null));
 
     await _pump(tester, cubit);
@@ -54,9 +57,11 @@ void main() {
     expect(chips.map((c) => c.selected), [true, false, false]);
     expect(find.byIcon(Icons.star_rounded), findsNothing);
     expect(find.byIcon(Icons.star_border_rounded), findsNWidgets(5));
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text(l10n.diarySaveReviewLabel), findsOneWidget);
   });
 
-  testWidgets('reflects a saved status, rating, and note', (tester) async {
+  testWidgets('reflects a saved status and shows the review in read-only view mode', (tester) async {
     final entry = DiaryEntry(
       gameId: 1,
       status: PlayStatus.playing,
@@ -73,6 +78,8 @@ void main() {
     expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
     expect(find.byIcon(Icons.star_border_rounded), findsNWidgets(2));
     expect(find.text('Great combat'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text(l10n.diaryEditReviewLabel), findsOneWidget);
   });
 
   testWidgets('shows the error message when the state carries one', (tester) async {
@@ -97,25 +104,55 @@ void main() {
     verify(() => cubit.updateStatus(PlayStatus.completed)).called(1);
   });
 
-  testWidgets('tapping a star calls updateRating with that star value', (tester) async {
+  testWidgets('tapping a star only updates the draft rating, without saving', (tester) async {
     whenListen(cubit, const Stream<DiaryState>.empty(), initialState: const DiaryLoaded(null));
-    when(() => cubit.updateRating(any())).thenAnswer((_) async {});
 
     await _pump(tester, cubit);
     await tester.tap(find.byType(IconButton).at(2)); // third star = rating 3
+    await tester.pump();
 
-    verify(() => cubit.updateRating(3)).called(1);
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
+    verifyNever(() => cubit.saveReview(rating: any(named: 'rating'), note: any(named: 'note')));
   });
 
-  testWidgets('typing a note and tapping save calls updateNote with that text', (tester) async {
-    whenListen(cubit, const Stream<DiaryState>.empty(), initialState: const DiaryLoaded(null));
-    when(() => cubit.updateNote(any())).thenAnswer((_) async {});
+  testWidgets('tapping a star while viewing a saved review switches back to edit mode', (tester) async {
+    final entry = DiaryEntry(gameId: 1, status: PlayStatus.playing, rating: 3, note: 'ok', updatedAt: DateTime(2026, 1, 1));
+    whenListen(cubit, const Stream<DiaryState>.empty(), initialState: DiaryLoaded(entry));
 
     await _pump(tester, cubit);
-    await tester.enterText(find.byType(TextField), 'Great game');
-    await tester.tap(find.byType(TextButton));
+    expect(find.byType(TextField), findsNothing);
 
-    verify(() => cubit.updateNote('Great game')).called(1);
+    await tester.tap(find.byType(IconButton).at(4)); // fifth star = rating 5
+    await tester.pump();
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text(l10n.diarySaveReviewLabel), findsOneWidget);
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(5));
+  });
+
+  testWidgets('tapping Edit on a saved review switches to edit mode with the note prefilled', (tester) async {
+    final entry = DiaryEntry(gameId: 1, status: PlayStatus.playing, rating: 3, note: 'Great combat', updatedAt: DateTime(2026, 1, 1));
+    whenListen(cubit, const Stream<DiaryState>.empty(), initialState: DiaryLoaded(entry));
+
+    await _pump(tester, cubit);
+    await tester.tap(find.text(l10n.diaryEditReviewLabel));
+    await tester.pump();
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Great combat'), findsOneWidget);
+  });
+
+  testWidgets('tapping Save review saves the draft rating and note together, in one call', (tester) async {
+    whenListen(cubit, const Stream<DiaryState>.empty(), initialState: const DiaryLoaded(null));
+    when(() => cubit.saveReview(rating: any(named: 'rating'), note: any(named: 'note'))).thenAnswer((_) async {});
+
+    await _pump(tester, cubit);
+    await tester.tap(find.byType(IconButton).at(3)); // fourth star = rating 4
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), 'Great game');
+    await tester.tap(find.text(l10n.diarySaveReviewLabel));
+
+    verify(() => cubit.saveReview(rating: 4, note: 'Great game')).called(1);
   });
 
   testWidgets('shows a confirmation snackbar once a save finishes successfully', (tester) async {
@@ -127,7 +164,7 @@ void main() {
     controller.add(const DiaryLoaded(null));
     await tester.pump();
 
-    expect(find.text(AppLocalizationsEn().diarySavedLabel), findsOneWidget);
+    expect(find.text(l10n.diarySavedLabel), findsOneWidget);
   });
 
   testWidgets('does not show a confirmation snackbar when the save fails', (tester) async {
@@ -139,6 +176,6 @@ void main() {
     controller.add(const DiaryLoaded(null, error: 'boom'));
     await tester.pump();
 
-    expect(find.text(AppLocalizationsEn().diarySavedLabel), findsNothing);
+    expect(find.text(l10n.diarySavedLabel), findsNothing);
   });
 }

@@ -73,13 +73,48 @@ void main() {
       when(() => repository.saveEntry(any())).thenAnswer((_) async => const Err(StorageFailure()));
     },
     build: () => DiaryCubit(getDiaryEntry, saveDiaryEntry, 1),
-    act: (cubit) => cubit.updateRating(5),
+    act: (cubit) => cubit.saveReview(rating: 5, note: ''),
     skip: 1,
     expect: () => [
       isA<DiaryLoaded>().having((s) => s.isSaving, 'isSaving', true),
       isA<DiaryLoaded>()
           .having((s) => s.entry, 'entry', isNull)
           .having((s) => s.error, 'error', isNotNull),
+    ],
+  );
+
+  blocTest<DiaryCubit, DiaryState>(
+    'saveReview saves the rating and the note together, in one save',
+    setUp: () {
+      when(() => repository.getEntry(1)).thenAnswer((_) async => const Ok(null));
+      when(() => repository.saveEntry(any())).thenAnswer((_) async => const Ok(Unit.instance));
+    },
+    build: () => DiaryCubit(getDiaryEntry, saveDiaryEntry, 1),
+    act: (cubit) => cubit.saveReview(rating: 4, note: '  Great combat  '),
+    skip: 1,
+    expect: () => [
+      isA<DiaryLoaded>().having((s) => s.isSaving, 'isSaving', true),
+      isA<DiaryLoaded>()
+          .having((s) => s.entry?.rating, 'rating', 4)
+          .having((s) => s.entry?.note, 'note', 'Great combat')
+          .having((s) => s.isSaving, 'isSaving', false),
+    ],
+  );
+
+  blocTest<DiaryCubit, DiaryState>(
+    'saveReview with rating 0 leaves any existing rating untouched',
+    setUp: () {
+      when(() => repository.getEntry(1)).thenAnswer(
+        (_) async => Ok(DiaryEntry(gameId: 1, status: PlayStatus.backlog, rating: 3, updatedAt: DateTime(2026, 1, 1))),
+      );
+      when(() => repository.saveEntry(any())).thenAnswer((_) async => const Ok(Unit.instance));
+    },
+    build: () => DiaryCubit(getDiaryEntry, saveDiaryEntry, 1),
+    act: (cubit) => cubit.saveReview(rating: 0, note: 'Just a note'),
+    skip: 1,
+    expect: () => [
+      isA<DiaryLoaded>().having((s) => s.isSaving, 'isSaving', true),
+      isA<DiaryLoaded>().having((s) => s.entry?.rating, 'rating', 3),
     ],
   );
 }
