@@ -21,6 +21,6 @@
   "diarySaveNoteLabel": "Save note",
   "diarySavedLabel": "Saved",
   "diaryErrorLabel": "Couldn't save. Try again.",
-  "myDiaryTooltip": "My diary",
-  "myDiaryEmptyMessage": "You haven't added any games to your diary yet."
+  "myDiaryEmptyMessage": "You haven't added any games to your diary yet.",
+  "diaryUpdatedLabel": "Updated"
 }

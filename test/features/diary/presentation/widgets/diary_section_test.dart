@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:questlog/features/diary/presentation/cubit/diary_cubit.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_state.dart';
 import 'package:questlog/features/diary/presentation/widgets/diary_section.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
+import 'package:questlog/l10n/generated/app_localizations_en.dart';
 
 class _MockDiaryCubit extends MockCubit<DiaryState> implements DiaryCubit {}
 
@@ -113,5 +116,29 @@ void main() {
     await tester.tap(find.byType(TextButton));
 
     verify(() => cubit.updateNote('Great game')).called(1);
+  });
+
+  testWidgets('shows a confirmation snackbar once a save finishes successfully', (tester) async {
+    final controller = StreamController<DiaryState>();
+    addTearDown(controller.close);
+    whenListen(cubit, controller.stream, initialState: const DiaryLoaded(null, isSaving: true));
+
+    await _pump(tester, cubit);
+    controller.add(const DiaryLoaded(null));
+    await tester.pump();
+
+    expect(find.text(AppLocalizationsEn().diarySavedLabel), findsOneWidget);
+  });
+
+  testWidgets('does not show a confirmation snackbar when the save fails', (tester) async {
+    final controller = StreamController<DiaryState>();
+    addTearDown(controller.close);
+    whenListen(cubit, controller.stream, initialState: const DiaryLoaded(null, isSaving: true));
+
+    await _pump(tester, cubit);
+    controller.add(const DiaryLoaded(null, error: 'boom'));
+    await tester.pump();
+
+    expect(find.text(AppLocalizationsEn().diarySavedLabel), findsNothing);
   });
 }

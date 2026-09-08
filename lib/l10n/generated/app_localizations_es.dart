@@ -73,9 +73,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get diaryErrorLabel => 'No se pudo guardar. Intenta de nuevo.';
 
   @override
-  String get myDiaryTooltip => 'Mi diario';
-
-  @override
   String get myDiaryEmptyMessage =>
       'Todavía no has agregado juegos a tu diario.';
+
+  @override
+  String get diaryUpdatedLabel => 'Actualizado';
 }

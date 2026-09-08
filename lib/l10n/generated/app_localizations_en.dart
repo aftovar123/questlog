@@ -73,9 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaryErrorLabel => 'Couldn\'t save. Try again.';
 
   @override
-  String get myDiaryTooltip => 'My diary';
-
-  @override
   String get myDiaryEmptyMessage =>
       'You haven\'t added any games to your diary yet.';
+
+  @override
+  String get diaryUpdatedLabel => 'Updated';
 }

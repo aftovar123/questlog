@@ -66,10 +66,13 @@ class _GamesListPageState extends State<GamesListPage> {
             ],
           ),
           actions: [
-            IconButton(
-              tooltip: l10n.myDiaryTooltip,
-              icon: const Icon(Icons.bookmark_rounded),
-              onPressed: () => context.push('/diary'),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: TextButton.icon(
+                onPressed: () => context.push('/diary'),
+                icon: const Icon(Icons.bookmark_rounded, size: 18),
+                label: Text(l10n.diaryTitle),
+              ),
             ),
           ],
         ),

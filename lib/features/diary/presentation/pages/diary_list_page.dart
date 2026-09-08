@@ -153,6 +153,13 @@ class _DiaryListTile extends StatelessWidget {
                         ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                       ),
                     ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.diaryUpdatedLabel}: ${_formatDate(entry.updatedAt)}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant, fontSize: 11),
+                    ),
                   ],
                 ),
               ),
@@ -162,4 +169,8 @@ class _DiaryListTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDate(DateTime date) {
+  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
 }

@@ -18,6 +18,26 @@ class DiarySection extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final state = context.watch<DiaryCubit>().state;
 
+    return BlocListener<DiaryCubit, DiaryState>(
+      // A save just finished successfully (was saving, now isn't, no error)
+      // — confirm it with a snackbar instead of relying only on the small
+      // checkmark next to the title, which is easy to miss.
+      listenWhen: (previous, current) =>
+          previous is DiaryLoaded &&
+          previous.isSaving &&
+          current is DiaryLoaded &&
+          !current.isSaving &&
+          current.error == null,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(l10n.diarySavedLabel), duration: const Duration(seconds: 2)));
+      },
+      child: _buildCard(context, l10n, scheme, state),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, AppLocalizations l10n, ColorScheme scheme, DiaryState state) {
     if (state is DiaryLoading) {
       return const SizedBox(
         height: 48,
@@ -43,6 +63,8 @@ class DiarySection extends StatelessWidget {
         children: [
           Row(
             children: [
+              Icon(Icons.bookmark_rounded, size: 18, color: scheme.primary),
+              const SizedBox(width: 6),
               Text(l10n.diaryTitle, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: 8),
               if (loaded.isSaving)
@@ -101,7 +123,6 @@ class DiarySection extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _NoteField extends StatefulWidget {
