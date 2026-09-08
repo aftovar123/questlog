@@ -1,7 +1,7 @@
 # Questlog
 
-Catálogo de videojuegos hecho en Flutter, pensado como proyecto de práctica —
-la idea de fondo ("Letterboxd para videojuegos") es más grande; esta v1 se
+Catálogo de videojuegos hecho en Flutter, la idea de fondo 
+("Letterboxd para videojuegos") es más grande; esta v1 se
 recorta a demostrar Clean Architecture, manejo de estado con Cubit, consumo
 real de API con Dio, persistencia local con Hive, y testing en varias capas.
 
