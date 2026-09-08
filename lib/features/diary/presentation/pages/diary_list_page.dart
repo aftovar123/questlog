@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:questlog/app/injection.dart';
 import 'package:questlog/core/widgets/fading_network_image.dart';
+import 'package:questlog/features/diary/domain/usecases/delete_diary_entry.dart';
 import 'package:questlog/features/diary/domain/usecases/get_all_diary_entries.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_list_cubit.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_list_state.dart';
@@ -19,7 +20,8 @@ class DiaryListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DiaryListCubit(getIt<GetAllDiaryEntries>(), getIt<GetGameDetail>()),
+      create: (_) =>
+          DiaryListCubit(getIt<GetAllDiaryEntries>(), getIt<GetGameDetail>(), getIt<DeleteDiaryEntry>()),
       child: const _DiaryListView(),
     );
   }
@@ -80,6 +82,62 @@ class _DiaryListView extends StatelessWidget {
 
 class _DiaryListTile extends StatelessWidget {
   const _DiaryListTile({required this.item});
+
+  final DiaryListItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final game = item.game;
+    final entry = item.entry;
+
+    return Dismissible(
+      key: ValueKey(entry.gameId),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(color: scheme.errorContainer, borderRadius: BorderRadius.circular(14)),
+        child: Icon(Icons.delete_rounded, color: scheme.onErrorContainer),
+      ),
+      confirmDismiss: (_) => _confirmAndDelete(context, l10n, game?.name ?? 'Juego #${entry.gameId}', entry.gameId),
+      child: _DiaryTileCard(item: item),
+    );
+  }
+
+  Future<bool> _confirmAndDelete(
+    BuildContext context,
+    AppLocalizations l10n,
+    String gameName,
+    int gameId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.diaryDeleteConfirmTitle),
+        content: Text(l10n.diaryDeleteConfirmMessage(gameName)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancelLabel)),
+          TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.deleteLabel)),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return false;
+
+    final cubit = context.read<DiaryListCubit>();
+    final deleted = await cubit.delete(gameId);
+    if (!deleted && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.diaryDeleteErrorLabel)));
+    }
+    return deleted;
+  }
+}
+
+class _DiaryTileCard extends StatelessWidget {
+  const _DiaryTileCard({required this.item});
 
   final DiaryListItem item;
 

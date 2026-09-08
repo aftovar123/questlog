@@ -23,5 +23,15 @@
   "diarySavedLabel": "Guardado",
   "diaryErrorLabel": "No se pudo guardar. Intenta de nuevo.",
   "myDiaryEmptyMessage": "Todavía no has agregado juegos a tu diario.",
-  "diaryUpdatedLabel": "Actualizado"
+  "diaryUpdatedLabel": "Actualizado",
+  "cancelLabel": "Cancelar",
+  "deleteLabel": "Eliminar",
+  "diaryDeleteConfirmTitle": "Eliminar del diario",
+  "diaryDeleteConfirmMessage": "¿Seguro que quieres eliminar tu reseña de {gameName}? Esta acción no se puede deshacer.",
+  "@diaryDeleteConfirmMessage": {
+    "placeholders": {
+      "gameName": { "type": "String" }
+    }
+  },
+  "diaryDeleteErrorLabel": "No se pudo eliminar. Intenta de nuevo."
 }

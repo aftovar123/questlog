@@ -241,6 +241,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updated'**
   String get diaryUpdatedLabel;
+
+  /// No description provided for @cancelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelLabel;
+
+  /// No description provided for @deleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteLabel;
+
+  /// No description provided for @diaryDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from diary'**
+  String get diaryDeleteConfirmTitle;
+
+  /// No description provided for @diaryDeleteConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove your review of {gameName}? This can\'t be undone.'**
+  String diaryDeleteConfirmMessage(String gameName);
+
+  /// No description provided for @diaryDeleteErrorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete. Try again.'**
+  String get diaryDeleteErrorLabel;
 }
 
 class _AppLocalizationsDelegate

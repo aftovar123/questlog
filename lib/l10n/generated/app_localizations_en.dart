@@ -81,4 +81,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diaryUpdatedLabel => 'Updated';
+
+  @override
+  String get cancelLabel => 'Cancel';
+
+  @override
+  String get deleteLabel => 'Delete';
+
+  @override
+  String get diaryDeleteConfirmTitle => 'Remove from diary';
+
+  @override
+  String diaryDeleteConfirmMessage(String gameName) {
+    return 'Are you sure you want to remove your review of $gameName? This can\'t be undone.';
+  }
+
+  @override
+  String get diaryDeleteErrorLabel => 'Couldn\'t delete. Try again.';
 }
