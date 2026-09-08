@@ -17,9 +17,17 @@ class DiaryListCubit extends Cubit<DiaryListState> {
   final GetAllDiaryEntries _getAllDiaryEntries;
   final GetGameDetail _getGameDetail;
 
+  // Same "restartable" pattern as GamesCubit: load() is reachable a second
+  // time via the "Retry" button on DiaryListFailed, so a slow first call
+  // must not be allowed to land after a faster, newer one.
+  int _requestId = 0;
+
   Future<void> load() async {
+    final requestId = ++_requestId;
     emit(const DiaryListLoading());
     final result = await _getAllDiaryEntries();
+    if (requestId != _requestId) return;
+
     switch (result) {
       case Ok(:final value):
         if (value.isEmpty) {
@@ -27,6 +35,8 @@ class DiaryListCubit extends Cubit<DiaryListState> {
           return;
         }
         final gameResults = await Future.wait(value.map((entry) => _getGameDetail(entry.gameId)));
+        if (requestId != _requestId) return;
+
         final items = [
           for (var i = 0; i < value.length; i++)
             (entry: value[i], game: switch (gameResults[i]) { Ok<Game>(:final value) => value, Err() => null }),

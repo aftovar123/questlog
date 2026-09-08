@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -64,4 +66,24 @@ void main() {
     build: () => DiaryListCubit(getAllDiaryEntries, getGameDetail),
     expect: () => [isA<DiaryListFailed>()],
   );
+
+  test('ignores a stale load() response that resolves after a newer one', () async {
+    final firstRequest = Completer<Result<List<DiaryEntry>>>();
+    var callCount = 0;
+    when(() => getAllDiaryEntries()).thenAnswer((_) {
+      callCount++;
+      return callCount == 1 ? firstRequest.future : Future.value(const Ok(<DiaryEntry>[]));
+    });
+
+    final cubit = DiaryListCubit(getAllDiaryEntries, getGameDetail); // triggers the first (stale) call
+    await cubit.load(); // supersedes the first before it resolves
+
+    expect(cubit.state, const DiaryListEmpty());
+
+    firstRequest.complete(Ok([entry1])); // the stale response arrives late
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state, const DiaryListEmpty()); // unchanged — the stale result was ignored
+    await cubit.close();
+  });
 }
