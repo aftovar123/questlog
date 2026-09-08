@@ -4,6 +4,7 @@ import 'package:questlog/app/theme.dart';
 import 'package:questlog/features/diary/domain/entities/play_status.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_cubit.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_state.dart';
+import 'package:questlog/features/diary/presentation/widgets/diary_status_label.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
 
 /// The "Letterboxd" part of Questlog — status, rating and a personal note,
@@ -65,7 +66,7 @@ class DiarySection extends StatelessWidget {
             children: [
               for (final option in PlayStatus.values)
                 ChoiceChip(
-                  label: Text(_statusLabel(l10n, option)),
+                  label: Text(diaryStatusLabel(l10n, option)),
                   selected: status == option,
                   onSelected: (_) => context.read<DiaryCubit>().updateStatus(option),
                 ),
@@ -101,13 +102,6 @@ class DiarySection extends StatelessWidget {
     );
   }
 
-  String _statusLabel(AppLocalizations l10n, PlayStatus status) {
-    return switch (status) {
-      PlayStatus.backlog => l10n.diaryStatusBacklog,
-      PlayStatus.playing => l10n.diaryStatusPlaying,
-      PlayStatus.completed => l10n.diaryStatusCompleted,
-    };
-  }
 }
 
 class _NoteField extends StatefulWidget {

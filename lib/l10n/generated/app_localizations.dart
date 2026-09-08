@@ -223,6 +223,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Try again.'**
   String get diaryErrorLabel;
+
+  /// No description provided for @myDiaryTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'My diary'**
+  String get myDiaryTooltip;
+
+  /// No description provided for @myDiaryEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t added any games to your diary yet.'**
+  String get myDiaryEmptyMessage;
 }
 
 class _AppLocalizationsDelegate

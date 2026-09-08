@@ -20,5 +20,7 @@
   "diaryNoteHint": "Escribe una reseña o nota personal...",
   "diarySaveNoteLabel": "Guardar nota",
   "diarySavedLabel": "Guardado",
-  "diaryErrorLabel": "No se pudo guardar. Intenta de nuevo."
+  "diaryErrorLabel": "No se pudo guardar. Intenta de nuevo.",
+  "myDiaryTooltip": "Mi diario",
+  "myDiaryEmptyMessage": "Todavía no has agregado juegos a tu diario."
 }

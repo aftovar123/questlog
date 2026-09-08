@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:questlog/app/injection.dart';
 import 'package:questlog/features/games/domain/usecases/get_games.dart';
 import 'package:questlog/features/games/presentation/cubit/games_cubit.dart';
@@ -64,6 +65,13 @@ class _GamesListPageState extends State<GamesListPage> {
               const Text('Questlog'),
             ],
           ),
+          actions: [
+            IconButton(
+              tooltip: l10n.myDiaryTooltip,
+              icon: const Icon(Icons.bookmark_rounded),
+              onPressed: () => context.push('/diary'),
+            ),
+          ],
         ),
         body: Center(
           child: ConstrainedBox(
