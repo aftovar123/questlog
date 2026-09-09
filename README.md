@@ -18,8 +18,8 @@ lib/
                   # y widgets compartidos entre features
   features/
     games/
-      domain/       # Game (entidad), GamesRepository (contrato), GetGames / GetGameDetail (casos de uso)
-      data/         # GameModel, GamesRemoteDataSource (RAWG), GamesRepositoryImpl
+      domain/       # Game/Genre (entidades), GamesRepository (contrato), GetGames/GetGameDetail/GetGenres (casos de uso)
+      data/         # GameModel/GenreModel, GamesRemoteDataSource (RAWG), GamesRepositoryImpl
       presentation/ # GamesCubit / GameDetailCubit + estados, páginas y widgets
     diary/
       domain/       # PlayStatus, DiaryEntry (entidad), DiaryRepository (contrato), casos de uso
@@ -53,8 +53,11 @@ reintentar — es intencional, demuestra el manejo de errores de red.
 
 ## Funcionalidad
 
-- Grid de juegos con búsqueda y filtro por género (chips: Action, RPG,
-  Adventure, Shooter, Strategy, Indie, Puzzle), consumiendo `/games` de RAWG.
+- Grid de juegos con búsqueda y filtro por género, consumiendo `/games` de
+  RAWG. Los chips salen de `/genres` en tiempo real (`GenresCubit`) — no de
+  una lista fija a mano — así que reflejan la taxonomía real de RAWG
+  (incluye géneros como Casual o Simulation) con los slugs correctos que la
+  API espera, en vez de slugs adivinados.
 - Detalle de cada juego: la tarjeta ya trae nombre/imagen/rating/fecha vía
   navegación (para que el Hero transicione sin esperar red), y `GameDetailCubit`
   hace una segunda llamada real a `/games/{id}` que enriquece la pantalla con
@@ -103,14 +106,16 @@ flutter test
 flutter analyze
 ```
 
-67 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+73 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
 construido a mano, sin depender de una llamada de red real ni de un
-navegador, que puede ocultar el código de estado real por CORS), 6 de
-casos de uso de `games` (`GetGames`, `GetGameDetail`,
+navegador, que puede ocultar el código de estado real por CORS), 8 de
+casos de uso de `games` (`GetGames`, `GetGameDetail`, `GetGenres`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
-paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 28 de `diary`
+paginación/reentrada), 2 de `GenresCubit` (incluyendo que un fallo se
+degrada a una lista vacía, no a un estado de error), 5 de parseo de
+`GameModel`/`GenreModel.fromJson`, 28 de `diary`
 (casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
 — incluyendo que `saveReview` guarda calificación y nota juntas en un solo
 guardado, que una entrada cuya enriquecida de juego falla se degrada en vez
@@ -129,8 +134,6 @@ aparece solo cuando el guardado termina sin error — mockeado con
 
 ## Qué falta
 
-- El filtro de género usa una lista curada de slugs en vez de traerlos desde
-  `/genres` — evita un segundo endpoint solo para poblar una fila de chips.
 - `hasMore` se calcula comparando el tamaño de la página contra `page_size`
   (RAWG no da un flag barato para esto) — si una página llega exactamente
   llena pero es la última, se hace una petición extra que vuelve vacía. Es una
