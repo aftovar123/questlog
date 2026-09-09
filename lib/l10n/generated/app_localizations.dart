@@ -271,6 +271,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t delete. Try again.'**
   String get diaryDeleteErrorLabel;
+
+  /// No description provided for @sessionExpiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Please try that again.'**
+  String get sessionExpiredMessage;
 }
 
 class _AppLocalizationsDelegate

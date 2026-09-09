@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:questlog/core/network/rawg_dio_client.dart';
+import 'package:questlog/core/network/session_expired_notifier.dart';
 import 'package:questlog/features/diary/data/datasources/diary_local_data_source.dart';
 import 'package:questlog/features/diary/data/repositories/diary_repository_impl.dart';
 import 'package:questlog/features/diary/domain/repositories/diary_repository.dart';
@@ -21,7 +22,8 @@ const diaryBoxName = 'diary';
 
 Future<void> configureDependencies() async {
   getIt
-    ..registerLazySingleton<Dio>(buildRawgDioClient)
+    ..registerLazySingleton(() => SessionExpiredNotifier())
+    ..registerLazySingleton<Dio>(() => buildRawgDioClient(getIt()))
     ..registerLazySingleton(() => GamesRemoteDataSource(getIt()))
     ..registerLazySingleton<GamesRepository>(() => GamesRepositoryImpl(getIt()))
     ..registerFactory(() => GetGames(getIt()))

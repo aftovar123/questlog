@@ -98,4 +98,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get diaryDeleteErrorLabel => 'No se pudo eliminar. Intenta de nuevo.';
+
+  @override
+  String get sessionExpiredMessage =>
+      'Tu sesión expiró. Vuelve a intentar la acción.';
 }

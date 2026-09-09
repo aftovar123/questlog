@@ -33,5 +33,6 @@
       "gameName": { "type": "String" }
     }
   },
-  "diaryDeleteErrorLabel": "Couldn't delete. Try again."
+  "diaryDeleteErrorLabel": "Couldn't delete. Try again.",
+  "sessionExpiredMessage": "Your session expired. Please try that again."
 }
