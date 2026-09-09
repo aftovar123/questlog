@@ -2,23 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:questlog/app/injection.dart';
+import 'package:questlog/features/games/domain/entities/genre.dart';
 import 'package:questlog/features/games/domain/usecases/get_games.dart';
+import 'package:questlog/features/games/domain/usecases/get_genres.dart';
 import 'package:questlog/features/games/presentation/cubit/games_cubit.dart';
 import 'package:questlog/features/games/presentation/cubit/games_state.dart';
+import 'package:questlog/features/games/presentation/cubit/genres_cubit.dart';
+import 'package:questlog/features/games/presentation/cubit/genres_state.dart';
 import 'package:questlog/features/games/presentation/widgets/game_carousel.dart';
 import 'package:questlog/l10n/generated/app_localizations.dart';
-
-/// A small curated subset of RAWG genre slugs — enough to make the list
-/// filterable without a second endpoint just to populate a chip row.
-const _genreOptions = <(String slug, String label)>[
-  ('action', 'Action'),
-  ('role-playing-games-rpg', 'RPG'),
-  ('adventure', 'Adventure'),
-  ('shooter', 'Shooter'),
-  ('strategy', 'Strategy'),
-  ('indie', 'Indie'),
-  ('puzzle', 'Puzzle'),
-];
 
 class GamesListPage extends StatefulWidget {
   const GamesListPage({super.key});
@@ -29,6 +21,7 @@ class GamesListPage extends StatefulWidget {
 
 class _GamesListPageState extends State<GamesListPage> {
   late final GamesCubit _cubit;
+  late final GenresCubit _genresCubit;
   final _searchController = TextEditingController();
   String? _selectedGenre;
 
@@ -36,11 +29,13 @@ class _GamesListPageState extends State<GamesListPage> {
   void initState() {
     super.initState();
     _cubit = GamesCubit(getIt<GetGames>())..loadGames();
+    _genresCubit = GenresCubit(getIt<GetGenres>());
   }
 
   @override
   void dispose() {
     _cubit.close();
+    _genresCubit.close();
     _searchController.dispose();
     super.dispose();
   }
@@ -53,8 +48,11 @@ class _GamesListPageState extends State<GamesListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
-    return BlocProvider.value(
-      value: _cubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _cubit),
+        BlocProvider.value(value: _genresCubit),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -95,30 +93,38 @@ class _GamesListPageState extends State<GamesListPage> {
                 ),
                 SizedBox(
                   height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: _genreOptions.length + 1,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return ChoiceChip(
-                          label: Text(l10n.allGenresLabel),
-                          selected: _selectedGenre == null,
-                          onSelected: (_) => setState(() {
-                            _selectedGenre = null;
-                            _reload();
-                          }),
-                        );
-                      }
-                      final (slug, label) = _genreOptions[index - 1];
-                      return ChoiceChip(
-                        label: Text(label),
-                        selected: _selectedGenre == slug,
-                        onSelected: (_) => setState(() {
-                          _selectedGenre = slug;
-                          _reload();
-                        }),
+                  child: BlocBuilder<GenresCubit, GenresState>(
+                    builder: (context, state) {
+                      final genres = switch (state) {
+                        GenresLoading() => const <Genre>[],
+                        GenresLoaded(:final genres) => genres,
+                      };
+                      return ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: genres.length + 1,
+                        separatorBuilder: (context, index) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return ChoiceChip(
+                              label: Text(l10n.allGenresLabel),
+                              selected: _selectedGenre == null,
+                              onSelected: (_) => setState(() {
+                                _selectedGenre = null;
+                                _reload();
+                              }),
+                            );
+                          }
+                          final genre = genres[index - 1];
+                          return ChoiceChip(
+                            label: Text(genre.name),
+                            selected: _selectedGenre == genre.slug,
+                            onSelected: (_) => setState(() {
+                              _selectedGenre = genre.slug;
+                              _reload();
+                            }),
+                          );
+                        },
                       );
                     },
                   ),
