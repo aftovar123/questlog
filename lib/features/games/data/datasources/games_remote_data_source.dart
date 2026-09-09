@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:questlog/features/games/data/models/game_model.dart';
+import 'package:questlog/features/games/data/models/genre_model.dart';
 
 class GamesRemoteDataSource {
   const GamesRemoteDataSource(this._dio);
@@ -33,5 +34,15 @@ class GamesRemoteDataSource {
   Future<GameModel> fetchGameDetail(int id) async {
     final response = await _dio.get<Map<String, dynamic>>('/games/$id');
     return GameModel.fromJson(response.data ?? {});
+  }
+
+  Future<List<GenreModel>> fetchGenres() async {
+    // RAWG's genre taxonomy is ~19 entries, well under one default page —
+    // no pagination needed to get the full list in one call.
+    final response = await _dio.get<Map<String, dynamic>>('/genres');
+    final results = (response.data?['results'] as List<dynamic>?) ?? [];
+    return results
+        .map((json) => GenreModel.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 }

@@ -15,6 +15,7 @@ import 'package:questlog/features/games/data/repositories/games_repository_impl.
 import 'package:questlog/features/games/domain/repositories/games_repository.dart';
 import 'package:questlog/features/games/domain/usecases/get_game_detail.dart';
 import 'package:questlog/features/games/domain/usecases/get_games.dart';
+import 'package:questlog/features/games/domain/usecases/get_genres.dart';
 
 final getIt = GetIt.instance;
 
@@ -27,7 +28,8 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton(() => GamesRemoteDataSource(getIt()))
     ..registerLazySingleton<GamesRepository>(() => GamesRepositoryImpl(getIt()))
     ..registerFactory(() => GetGames(getIt()))
-    ..registerFactory(() => GetGameDetail(getIt()));
+    ..registerFactory(() => GetGameDetail(getIt()))
+    ..registerFactory(() => GetGenres(getIt()));
 
   await Hive.initFlutter();
   final diaryBox = await Hive.openBox<Map>(diaryBoxName);

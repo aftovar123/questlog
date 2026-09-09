@@ -3,6 +3,7 @@ import 'package:questlog/core/result.dart';
 import 'package:questlog/features/games/data/datasources/games_remote_data_source.dart';
 import 'package:questlog/features/games/domain/entities/game.dart';
 import 'package:questlog/features/games/domain/entities/games_page.dart';
+import 'package:questlog/features/games/domain/entities/genre.dart';
 import 'package:questlog/features/games/domain/repositories/games_repository.dart';
 
 class GamesRepositoryImpl implements GamesRepository {
@@ -37,6 +38,18 @@ class GamesRepositoryImpl implements GamesRepository {
     try {
       final game = await _remoteDataSource.fetchGameDetail(id);
       return Ok(game);
+    } on DioException catch (error) {
+      return Err(_mapError(error));
+    } catch (_) {
+      return const Err(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<Result<List<Genre>>> getGenres() async {
+    try {
+      final genres = await _remoteDataSource.fetchGenres();
+      return Ok(genres);
     } on DioException catch (error) {
       return Err(_mapError(error));
     } catch (_) {
