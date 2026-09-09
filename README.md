@@ -14,7 +14,8 @@ real de API con Dio, persistencia local con Hive, y testing en varias capas.
 ```
 lib/
   app/            # composición: router, inyección de dependencias, widget raíz
-  core/           # Result/Failure, cliente Dio y widgets compartidos entre features
+  core/           # Result/Failure, cliente Dio, interceptor de sesión expirada,
+                  # y widgets compartidos entre features
   features/
     games/
       domain/       # Game (entidad), GamesRepository (contrato), GetGames / GetGameDetail (casos de uso)
@@ -87,6 +88,13 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   para eliminarla (con confirmación antes de borrar), cerrando el CRUD del
   diario — `DeleteDiaryEntry` existía en el dominio desde el inicio, pero
   hasta ahora nada lo usaba.
+- Interceptor de sesión expirada: `SessionAwareErrorInterceptor` detecta un
+  401 en `onError` y solo notifica (`SessionExpiredNotifier`) — nunca navega
+  ni toca la UI directamente. `QuestlogApp` escucha esa notificación y decide
+  qué hacer (mostrar un mensaje), separando "detectar" de "decidir". RAWG no
+  tiene sesión real, así que esto solo dispara con una API key inválida —
+  pero está conectado exactamente como lo estaría en una API con sesión de
+  verdad.
 
 ## Tests
 
@@ -95,7 +103,11 @@ flutter test
 flutter analyze
 ```
 
-62 tests en 5 capas: 6 de casos de uso de `games` (`GetGames`, `GetGameDetail`,
+67 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+`SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
+construido a mano, sin depender de una llamada de red real ni de un
+navegador, que puede ocultar el código de estado real por CORS), 6 de
+casos de uso de `games` (`GetGames`, `GetGameDetail`,
 repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
 paginación/reentrada), 3 de parseo de `GameModel.fromJson`, 28 de `diary`
