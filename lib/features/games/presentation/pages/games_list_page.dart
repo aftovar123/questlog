@@ -88,6 +88,8 @@ class _GamesListPageState extends State<GamesListPage> {
                       hintText: l10n.searchHint,
                       prefixIcon: const Icon(Icons.search),
                     ),
+                    onChanged: (value) =>
+                        _cubit.searchDebounced(value, genre: _selectedGenre),
                     onSubmitted: (_) => _reload(),
                   ),
                 ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:questlog/core/result.dart';
 import 'package:questlog/features/games/domain/usecases/get_games.dart';
@@ -16,7 +18,28 @@ class GamesCubit extends Cubit<GamesState> {
   String? _genre;
   int _page = 1;
 
+  // Debounce is a different problem than the request-id guard above: that
+  // one discards a stale response that already went out; this one stops a
+  // request from going out at all while the user is still typing.
+  Timer? _debounceTimer;
+  static const _searchDebounce = Duration(milliseconds: 400);
+
+  /// Waits for a pause in typing before actually searching — call this from
+  /// a search field's `onChanged`. Use [loadGames] directly for anything
+  /// that should search immediately (pressing enter, tapping a genre chip).
+  void searchDebounced(String query, {String? genre}) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_searchDebounce, () => loadGames(search: query, genre: genre));
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    return super.close();
+  }
+
   Future<void> loadGames({String? search, String? genre}) async {
+    _debounceTimer?.cancel();
     _search = search;
     _genre = genre;
     _page = 1;

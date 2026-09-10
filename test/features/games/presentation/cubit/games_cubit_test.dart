@@ -106,6 +106,60 @@ void main() {
     },
   );
 
+  blocTest<GamesCubit, GamesState>(
+    'searchDebounced waits before actually searching',
+    setUp: () {
+      when(
+        () => repository.getGames(page: 1, search: 'zelda', genre: null),
+      ).thenAnswer((_) async => const Ok(GamesPage(games: games, hasMore: false)));
+    },
+    build: () => GamesCubit(getGames),
+    act: (cubit) => cubit.searchDebounced('zelda'),
+    wait: const Duration(milliseconds: 500),
+    expect: () => [const GamesLoading(), const GamesLoaded(games)],
+  );
+
+  blocTest<GamesCubit, GamesState>(
+    'rapid searchDebounced calls collapse into a single search for the last query',
+    setUp: () {
+      when(
+        () => repository.getGames(page: 1, search: 'zelda', genre: null),
+      ).thenAnswer((_) async => const Ok(GamesPage(games: games, hasMore: false)));
+    },
+    build: () => GamesCubit(getGames),
+    act: (cubit) {
+      cubit.searchDebounced('z');
+      cubit.searchDebounced('ze');
+      cubit.searchDebounced('zelda');
+    },
+    wait: const Duration(milliseconds: 500),
+    expect: () => [const GamesLoading(), const GamesLoaded(games)],
+    verify: (_) {
+      verify(() => repository.getGames(page: 1, search: 'zelda', genre: null)).called(1);
+      verifyNever(() => repository.getGames(page: 1, search: 'z', genre: null));
+      verifyNever(() => repository.getGames(page: 1, search: 'ze', genre: null));
+    },
+  );
+
+  blocTest<GamesCubit, GamesState>(
+    'loadGames cancels a pending debounce, so a stale query never fires afterward',
+    setUp: () {
+      when(
+        () => repository.getGames(page: 1, search: 'zelda', genre: null),
+      ).thenAnswer((_) async => const Ok(GamesPage(games: games, hasMore: false)));
+    },
+    build: () => GamesCubit(getGames),
+    act: (cubit) {
+      cubit.searchDebounced('partial'); // still typing
+      cubit.loadGames(search: 'zelda'); // e.g. the user pressed enter right away
+    },
+    wait: const Duration(milliseconds: 500),
+    expect: () => [const GamesLoading(), const GamesLoaded(games)],
+    verify: (_) {
+      verifyNever(() => repository.getGames(page: 1, search: 'partial', genre: null));
+    },
+  );
+
   test(
     'ignores a stale response from an earlier request that resolves later',
     () async {
