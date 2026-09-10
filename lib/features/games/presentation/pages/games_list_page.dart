@@ -48,6 +48,10 @@ class _GamesListPageState extends State<GamesListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
+    // Narrow phones don't have room for the brand, "Questlog", and two
+    // labeled buttons on one AppBar row — icon-only buttons free up enough
+    // width that the title never has to fight them for space.
+    final isCompact = MediaQuery.sizeOf(context).width < 460;
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
@@ -60,25 +64,37 @@ class _GamesListPageState extends State<GamesListPage> {
             children: [
               const _BrandMark(),
               const SizedBox(width: 10),
-              const Text('Questlog'),
+              const Flexible(child: Text('Questlog', overflow: TextOverflow.ellipsis)),
             ],
           ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 4),
-              child: TextButton.icon(
-                onPressed: () => context.push('/stats'),
-                icon: const Icon(Icons.bar_chart_rounded, size: 18),
-                label: Text(l10n.statsTitle),
-              ),
+              child: isCompact
+                  ? IconButton(
+                      tooltip: l10n.statsTitle,
+                      onPressed: () => context.push('/stats'),
+                      icon: const Icon(Icons.bar_chart_rounded, size: 20),
+                    )
+                  : TextButton.icon(
+                      onPressed: () => context.push('/stats'),
+                      icon: const Icon(Icons.bar_chart_rounded, size: 18),
+                      label: Text(l10n.statsTitle),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: TextButton.icon(
-                onPressed: () => context.push('/diary'),
-                icon: const Icon(Icons.bookmark_rounded, size: 18),
-                label: Text(l10n.diaryTitle),
-              ),
+              child: isCompact
+                  ? IconButton(
+                      tooltip: l10n.diaryTitle,
+                      onPressed: () => context.push('/diary'),
+                      icon: const Icon(Icons.bookmark_rounded, size: 20),
+                    )
+                  : TextButton.icon(
+                      onPressed: () => context.push('/diary'),
+                      icon: const Icon(Icons.bookmark_rounded, size: 18),
+                      label: Text(l10n.diaryTitle),
+                    ),
             ),
           ],
         ),

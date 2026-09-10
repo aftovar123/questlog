@@ -82,43 +82,72 @@ class _StatsGrid extends StatelessWidget {
     final averageRatingValue = stats.averageRating;
     final topGenre = stats.topGenre;
 
+    // A fixed aspect ratio made card height shrink together with width on
+    // narrow phones, while the text inside (which can wrap to 2 lines)
+    // stayed the same size — that combination overflowed on real devices.
+    // Rows of stretched, content-sized cards can't overflow that way: each
+    // row is exactly as tall as its tallest card needs to be, at any width
+    // or text scale, and the whole thing scrolls if it still doesn't fit.
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 700),
-        child: GridView.count(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1.3,
-          children: [
-            _StatCard(
-              icon: Icons.bookmark_rounded,
-              label: l10n.statsTotalTrackedLabel,
-              value: '${stats.totalTracked}',
-            ),
-            _CompletedCard(
-              completed: stats.completedCount,
-              total: stats.totalTracked,
-              label: l10n.statsCompletedLabel,
-              fractionLabel: l10n.statsFractionLabel(stats.completedCount, stats.totalTracked),
-            ),
-            _RatingCard(
-              rating: averageRatingValue,
-              label: l10n.statsAverageRatingLabel,
-              emptyLabel: l10n.statsAverageRatingEmptyLabel,
-            ),
-            _GenreCard(
-              genre: topGenre,
-              count: stats.topGenreCount,
-              total: stats.totalTracked,
-              label: l10n.statsTopGenreLabel,
-              emptyLabel: l10n.statsTopGenreEmptyLabel,
-              fractionLabel: topGenre == null
-                  ? null
-                  : l10n.statsFractionLabel(stats.topGenreCount, stats.totalTracked),
-            ),
-          ],
+          child: Column(
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        icon: Icons.bookmark_rounded,
+                        label: l10n.statsTotalTrackedLabel,
+                        value: '${stats.totalTracked}',
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _CompletedCard(
+                        completed: stats.completedCount,
+                        total: stats.totalTracked,
+                        label: l10n.statsCompletedLabel,
+                        fractionLabel: l10n.statsFractionLabel(stats.completedCount, stats.totalTracked),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _RatingCard(
+                        rating: averageRatingValue,
+                        label: l10n.statsAverageRatingLabel,
+                        emptyLabel: l10n.statsAverageRatingEmptyLabel,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _GenreCard(
+                        genre: topGenre,
+                        count: stats.topGenreCount,
+                        total: stats.totalTracked,
+                        label: l10n.statsTopGenreLabel,
+                        emptyLabel: l10n.statsTopGenreEmptyLabel,
+                        fractionLabel: topGenre == null
+                            ? null
+                            : l10n.statsFractionLabel(stats.topGenreCount, stats.totalTracked),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
