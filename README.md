@@ -58,6 +58,11 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   una lista fija a mano — así que reflejan la taxonomía real de RAWG
   (incluye géneros como Casual o Simulation) con los slugs correctos que la
   API espera, en vez de slugs adivinados.
+- Búsqueda con debounce: `GamesCubit.searchDebounced` espera 400ms sin
+  teclear antes de buscar de verdad, en vez de pedir en cada tecla o exigir
+  Enter. Es un problema distinto al de la reentrada protegida: aquella
+  descarta una respuesta vieja que ya salió; esta evita que la petición
+  salga siquiera mientras el usuario sigue escribiendo.
 - Detalle de cada juego: la tarjeta ya trae nombre/imagen/rating/fecha vía
   navegación (para que el Hero transicione sin esperar red), y `GameDetailCubit`
   hace una segunda llamada real a `/games/{id}` que enriquece la pantalla con
@@ -106,14 +111,17 @@ flutter test
 flutter analyze
 ```
 
-73 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+76 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
 construido a mano, sin depender de una llamada de red real ni de un
 navegador, que puede ocultar el código de estado real por CORS), 8 de
 casos de uso de `games` (`GetGames`, `GetGameDetail`, `GetGenres`,
-repositorio mockeado con mocktail), 10 de `GamesCubit`/`GameDetailCubit` (con
-`bloc_test` y un test unitario directo, cubriendo éxito/vacío/error/degradación/
-paginación/reentrada), 2 de `GenresCubit` (incluyendo que un fallo se
+repositorio mockeado con mocktail), 13 de `GamesCubit`/`GameDetailCubit` (con
+`bloc_test` y tests unitarios directos, cubriendo éxito/vacío/error/degradación/
+paginación/reentrada, y el debounce de `searchDebounced` — incluyendo que
+varias llamadas rápidas colapsan en una sola búsqueda con el último valor,
+y que un `loadGames` inmediato cancela un debounce pendiente), 2 de
+`GenresCubit` (incluyendo que un fallo se
 degrada a una lista vacía, no a un estado de error), 5 de parseo de
 `GameModel`/`GenreModel.fromJson`, 28 de `diary`
 (casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
