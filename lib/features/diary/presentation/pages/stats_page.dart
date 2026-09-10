@@ -88,11 +88,15 @@ class _StatsGrid extends StatelessWidget {
     // Rows of stretched, content-sized cards can't overflow that way: each
     // row is exactly as tall as its tallest card needs to be, at any width
     // or text scale, and the whole thing scrolls if it still doesn't fit.
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+    // SingleChildScrollView on the outside (not Center) so the cards sit
+    // right under the app bar like the rest of the app's screens — Center
+    // would give the scroll view loose height and then vertically center
+    // the whole content block, leaving a big empty gap above it.
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
           child: Column(
             children: [
               IntrinsicHeight(

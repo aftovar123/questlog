@@ -172,29 +172,46 @@ class _GamesListPageState extends State<GamesListPage> {
                   ),
                 ),
                 Expanded(
-                  child: BlocBuilder<GamesCubit, GamesState>(
-                    builder: (context, state) => switch (state) {
-                      GamesInitial() || GamesLoading() => _StatusView(
-                        icon: Icons.sports_esports_rounded,
-                        message: l10n.loadingLabel,
-                        spinning: true,
-                      ),
-                      GamesEmpty() => _StatusView(
-                        icon: Icons.search_off_rounded,
-                        message: l10n.emptyGamesMessage,
-                      ),
-                      GamesFailed(:final message) => _ErrorView(
-                        message: message,
-                        retryLabel: l10n.retryLabel,
-                        onRetry: _reload,
-                      ),
-                      GamesLoaded(:final games, :final hasMore, :final isLoadingMore) =>
-                        GameCarousel(
-                          games: games,
-                          hasMore: hasMore,
-                          isLoadingMore: isLoadingMore,
-                          onLoadMore: _cubit.loadMore,
+                  // The carousel card needs ~280px to lay out without
+                  // clipping. Opening the on-screen keyboard shrinks this
+                  // Expanded's height (Scaffold resizes for the keyboard),
+                  // and a plain Expanded forces its child to that shrunk
+                  // height exactly — not enough room, so the card overflows.
+                  // Wrapping in a scroll view lets the carousel keep its
+                  // natural height and simply become scrollable in that
+                  // squeeze instead of overflowing.
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                          child: BlocBuilder<GamesCubit, GamesState>(
+                            builder: (context, state) => switch (state) {
+                              GamesInitial() || GamesLoading() => _StatusView(
+                                icon: Icons.sports_esports_rounded,
+                                message: l10n.loadingLabel,
+                                spinning: true,
+                              ),
+                              GamesEmpty() => _StatusView(
+                                icon: Icons.search_off_rounded,
+                                message: l10n.emptyGamesMessage,
+                              ),
+                              GamesFailed(:final message) => _ErrorView(
+                                message: message,
+                                retryLabel: l10n.retryLabel,
+                                onRetry: _reload,
+                              ),
+                              GamesLoaded(:final games, :final hasMore, :final isLoadingMore) =>
+                                GameCarousel(
+                                  games: games,
+                                  hasMore: hasMore,
+                                  isLoadingMore: isLoadingMore,
+                                  onLoadMore: _cubit.loadMore,
+                                ),
+                            },
+                          ),
                         ),
+                      );
                     },
                   ),
                 ),
