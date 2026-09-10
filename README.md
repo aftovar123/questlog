@@ -73,8 +73,10 @@ reintentar — es intencional, demuestra el manejo de errores de red.
 - Imágenes con fade-in al cargar (`FadingNetworkImage`) en vez de aparecer de
   golpe, y placeholder consistente si la URL falla.
 - Scroll infinito en el carrusel: al acercarse al final pide la siguiente
-  página y la agrega a la lista (`GamesCubit.loadMore`), sabiendo si hay más
-  por `GamesPage.hasMore` (calculado en el repositorio, no adivinado por la UI).
+  página y la agrega a la lista (`GamesCubit.loadMore`). `GamesPage.hasMore`
+  se calcula en la capa de datos a partir del campo `next` real que devuelve
+  RAWG (paginación estándar de DRF: una URL o `null`), no adivinando si una
+  página llegó llena.
 - Reentrada protegida: cada `loadGames`/`loadMore` lleva un número de secuencia
   interno en el Cubit — si el usuario busca o cambia de filtro varias veces
   seguidas, una respuesta vieja que llega tarde ya no puede pisar el estado de
@@ -117,12 +119,15 @@ Ambos corren automáticamente en CI ([GitHub Actions](.github/workflows/ci.yml))
 en cada push y pull request a `main` — sin secretos ni API key: ningún test
 llama a RAWG de verdad, todos mockean la capa de repositorio.
 
-76 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+80 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
 construido a mano, sin depender de una llamada de red real ni de un
 navegador, que puede ocultar el código de estado real por CORS), 8 de
 casos de uso de `games` (`GetGames`, `GetGameDetail`, `GetGenres`,
-repositorio mockeado con mocktail), 13 de `GamesCubit`/`GameDetailCubit` (con
+repositorio mockeado con mocktail), 4 de `GamesRemoteDataSource.parseGamesResponse`
+(función pura que traduce el JSON de RAWG a `(games, hasMore)` sin tocar Dio —
+incluye el caso exacto que la vieja heurística fallaba: una página llena que
+además es la última), 13 de `GamesCubit`/`GameDetailCubit` (con
 `bloc_test` y tests unitarios directos, cubriendo éxito/vacío/error/degradación/
 paginación/reentrada, y el debounce de `searchDebounced` — incluyendo que
 varias llamadas rápidas colapsan en una sola búsqueda con el último valor,
@@ -145,10 +150,3 @@ que tocar una estrella solo actualiza el borrador sin guardar, que tocar
 reseña" guarda calificación y nota juntas, y que el snackbar de confirmación
 aparece solo cuando el guardado termina sin error — mockeado con
 `MockCubit`/`whenListen` de `bloc_test`).
-
-## Qué falta
-
-- `hasMore` se calcula comparando el tamaño de la página contra `page_size`
-  (RAWG no da un flag barato para esto) — si una página llega exactamente
-  llena pero es la última, se hace una petición extra que vuelve vacía. Es una
-  simplificación consciente, no un descuido.
