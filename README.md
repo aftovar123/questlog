@@ -11,6 +11,10 @@ real de API con Dio, persistencia local con Hive, y testing en varias capas.
 |---|---|
 | ![Lista de juegos con búsqueda y filtro por género](docs/screenshots/games-list.png) | ![Detalle de un juego con el diario personal: estado, calificación y nota](docs/screenshots/game-detail-diary.png) |
 
+| Mi diario (6 juegos reales) | Estadísticas |
+|---|---|
+| ![Diario con 6 juegos marcados: distintos estados, calificaciones y géneros](docs/screenshots/diary-6games.png) | ![Estadísticas calculadas en vivo sobre esos mismos 6 juegos: 6 en el diario, 4 completados, 4.8/5 de promedio, Action como género favorito](docs/screenshots/stats.png) |
+
 ## Arquitectura
 
 ```
