@@ -129,7 +129,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statsTopGenreEmptyLabel => 'Sin datos de género todavía';
 
   @override
-  String statsTopGenreCountLabel(int count) {
-    return '$count juego(s)';
+  String statsFractionLabel(int current, int total) {
+    return '$current de $total juegos';
   }
 }

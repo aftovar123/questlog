@@ -326,11 +326,11 @@ abstract class AppLocalizations {
   /// **'No genre data yet'**
   String get statsTopGenreEmptyLabel;
 
-  /// No description provided for @statsTopGenreCountLabel.
+  /// No description provided for @statsFractionLabel.
   ///
   /// In en, this message translates to:
-  /// **'{count} game(s)'**
-  String statsTopGenreCountLabel(int count);
+  /// **'{current} of {total} games'**
+  String statsFractionLabel(int current, int total);
 }
 
 class _AppLocalizationsDelegate

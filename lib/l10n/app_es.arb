@@ -43,10 +43,11 @@
   "statsAverageRatingEmptyLabel": "Sin calificaciones todavía",
   "statsTopGenreLabel": "Género favorito",
   "statsTopGenreEmptyLabel": "Sin datos de género todavía",
-  "statsTopGenreCountLabel": "{count} juego(s)",
-  "@statsTopGenreCountLabel": {
+  "statsFractionLabel": "{current} de {total} juegos",
+  "@statsFractionLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "current": { "type": "int" },
+      "total": { "type": "int" }
     }
   }
 }

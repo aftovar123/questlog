@@ -128,7 +128,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsTopGenreEmptyLabel => 'No genre data yet';
 
   @override
-  String statsTopGenreCountLabel(int count) {
-    return '$count game(s)';
+  String statsFractionLabel(int current, int total) {
+    return '$current of $total games';
   }
 }
