@@ -102,4 +102,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sessionExpiredMessage =>
       'Your session expired. Please try that again.';
+
+  @override
+  String get statsTitle => 'Stats';
+
+  @override
+  String get statsEmptyMessage => 'Add games to your diary to see your stats.';
+
+  @override
+  String get statsTotalTrackedLabel => 'Games in your diary';
+
+  @override
+  String get statsCompletedLabel => 'Completed';
+
+  @override
+  String get statsAverageRatingLabel => 'Average rating';
+
+  @override
+  String get statsAverageRatingEmptyLabel => 'No ratings yet';
+
+  @override
+  String get statsTopGenreLabel => 'Favorite genre';
+
+  @override
+  String get statsTopGenreEmptyLabel => 'No genre data yet';
+
+  @override
+  String statsTopGenreCountLabel(int count) {
+    return '$count game(s)';
+  }
 }

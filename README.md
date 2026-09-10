@@ -100,6 +100,19 @@ reintentar — es intencional, demuestra el manejo de errores de red.
   para eliminarla (con confirmación antes de borrar), cerrando el CRUD del
   diario — `DeleteDiaryEntry` existía en el dominio desde el inicio, pero
   hasta ahora nada lo usaba.
+- Estadísticas (ícono de barras en el app bar): 4 métricas calculadas en vivo
+  a partir de lo que hay persistido en Hive ahora mismo — juegos en el
+  diario, completados, calificación promedio y género favorito. Nada es de
+  ejemplo: con el diario vacío, la pantalla lo dice explícitamente en vez de
+  mostrar ceros. `computeDiaryStats` es una función pura (entradas + mapa de
+  juegos → estadísticas) sin repositorio ni async, así se prueba directo con
+  datos en memoria — mismo patrón que `parseGamesResponse`. `StatsCubit`
+  reutiliza `GetAllDiaryEntries` + `GetGameDetail` con la misma composición
+  de `DiaryListCubit` (join en la capa de presentación, no en el dominio).
+  El promedio solo considera entradas que ya tienen calificación (una sin
+  calificar no cuenta como 0), y el género favorito cuenta ocurrencias sobre
+  los juegos cuya enriquecida sí tuvo éxito, degradándose en silencio si
+  alguna falló — igual que el resto de la app.
 - Interceptor de sesión expirada: `SessionAwareErrorInterceptor` detecta un
   401 en `onError` y solo notifica (`SessionExpiredNotifier`) — nunca navega
   ni toca la UI directamente. `QuestlogApp` escucha esa notificación y decide
@@ -119,7 +132,7 @@ Ambos corren automáticamente en CI ([GitHub Actions](.github/workflows/ci.yml))
 en cada push y pull request a `main` — sin secretos ni API key: ningún test
 llama a RAWG de verdad, todos mockean la capa de repositorio.
 
-80 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+91 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
 construido a mano, sin depender de una llamada de red real ni de un
 navegador, que puede ocultar el código de estado real por CORS), 8 de
@@ -143,7 +156,11 @@ vieja que llega tarde (mismo patrón "restartable" que `GamesCubit`), y que
 `delete()` quita solo la entrada correcta o deja la lista intacta si falla
 —, más el repositorio contra una instancia real de Hive vía
 `hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
-ella), y 15 de widgets con `testWidgets`: `GameCarousel` (renderizado,
+ella), 11 de estadísticas (7 de `computeDiaryStats` — función pura, incluyendo
+que una calificación sin poner no cuenta como 0 y que una entrada cuya
+enriquecida de juego falló se ignora para género sin romper el cálculo — y 4
+de `StatsCubit` con `bloc_test`, cubriendo vacío/éxito/error/reentrada), y 15
+de widgets con `testWidgets`: `GameCarousel` (renderizado,
 paginación al hacer scroll) y `DiarySection` (estados de carga/guardado/error,
 que tocar una estrella solo actualiza el borrador sin guardar, que tocar
 "Editar" o una estrella en modo lectura vuelve a modo edición, que "Guardar

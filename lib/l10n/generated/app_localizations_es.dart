@@ -102,4 +102,34 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get sessionExpiredMessage =>
       'Tu sesión expiró. Vuelve a intentar la acción.';
+
+  @override
+  String get statsTitle => 'Estadísticas';
+
+  @override
+  String get statsEmptyMessage =>
+      'Agrega juegos a tu diario para ver tus estadísticas.';
+
+  @override
+  String get statsTotalTrackedLabel => 'Juegos en tu diario';
+
+  @override
+  String get statsCompletedLabel => 'Completados';
+
+  @override
+  String get statsAverageRatingLabel => 'Calificación promedio';
+
+  @override
+  String get statsAverageRatingEmptyLabel => 'Sin calificaciones todavía';
+
+  @override
+  String get statsTopGenreLabel => 'Género favorito';
+
+  @override
+  String get statsTopGenreEmptyLabel => 'Sin datos de género todavía';
+
+  @override
+  String statsTopGenreCountLabel(int count) {
+    return '$count juego(s)';
+  }
 }

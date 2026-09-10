@@ -34,5 +34,19 @@
     }
   },
   "diaryDeleteErrorLabel": "No se pudo eliminar. Intenta de nuevo.",
-  "sessionExpiredMessage": "Tu sesión expiró. Vuelve a intentar la acción."
+  "sessionExpiredMessage": "Tu sesión expiró. Vuelve a intentar la acción.",
+  "statsTitle": "Estadísticas",
+  "statsEmptyMessage": "Agrega juegos a tu diario para ver tus estadísticas.",
+  "statsTotalTrackedLabel": "Juegos en tu diario",
+  "statsCompletedLabel": "Completados",
+  "statsAverageRatingLabel": "Calificación promedio",
+  "statsAverageRatingEmptyLabel": "Sin calificaciones todavía",
+  "statsTopGenreLabel": "Género favorito",
+  "statsTopGenreEmptyLabel": "Sin datos de género todavía",
+  "statsTopGenreCountLabel": "{count} juego(s)",
+  "@statsTopGenreCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

@@ -277,6 +277,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your session expired. Please try that again.'**
   String get sessionExpiredMessage;
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get statsTitle;
+
+  /// No description provided for @statsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add games to your diary to see your stats.'**
+  String get statsEmptyMessage;
+
+  /// No description provided for @statsTotalTrackedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Games in your diary'**
+  String get statsTotalTrackedLabel;
+
+  /// No description provided for @statsCompletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statsCompletedLabel;
+
+  /// No description provided for @statsAverageRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Average rating'**
+  String get statsAverageRatingLabel;
+
+  /// No description provided for @statsAverageRatingEmptyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings yet'**
+  String get statsAverageRatingEmptyLabel;
+
+  /// No description provided for @statsTopGenreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite genre'**
+  String get statsTopGenreLabel;
+
+  /// No description provided for @statsTopGenreEmptyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No genre data yet'**
+  String get statsTopGenreEmptyLabel;
+
+  /// No description provided for @statsTopGenreCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} game(s)'**
+  String statsTopGenreCountLabel(int count);
 }
 
 class _AppLocalizationsDelegate

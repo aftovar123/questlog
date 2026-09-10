@@ -34,5 +34,19 @@
     }
   },
   "diaryDeleteErrorLabel": "Couldn't delete. Try again.",
-  "sessionExpiredMessage": "Your session expired. Please try that again."
+  "sessionExpiredMessage": "Your session expired. Please try that again.",
+  "statsTitle": "Stats",
+  "statsEmptyMessage": "Add games to your diary to see your stats.",
+  "statsTotalTrackedLabel": "Games in your diary",
+  "statsCompletedLabel": "Completed",
+  "statsAverageRatingLabel": "Average rating",
+  "statsAverageRatingEmptyLabel": "No ratings yet",
+  "statsTopGenreLabel": "Favorite genre",
+  "statsTopGenreEmptyLabel": "No genre data yet",
+  "statsTopGenreCountLabel": "{count} game(s)",
+  "@statsTopGenreCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

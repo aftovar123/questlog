@@ -65,6 +65,14 @@ class _GamesListPageState extends State<GamesListPage> {
           ),
           actions: [
             Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: TextButton.icon(
+                onPressed: () => context.push('/stats'),
+                icon: const Icon(Icons.bar_chart_rounded, size: 18),
+                label: Text(l10n.statsTitle),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.only(right: 12),
               child: TextButton.icon(
                 onPressed: () => context.push('/diary'),
