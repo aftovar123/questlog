@@ -1,5 +1,7 @@
 # Questlog
 
+[![CI](https://github.com/aftovar123/questlog/actions/workflows/ci.yml/badge.svg)](https://github.com/aftovar123/questlog/actions/workflows/ci.yml)
+
 Catálogo de videojuegos hecho en Flutter, la idea de fondo 
 ("Letterboxd para videojuegos") es más grande; esta v1 se
 recorta a demostrar Clean Architecture, manejo de estado con Cubit, consumo
@@ -110,6 +112,10 @@ reintentar — es intencional, demuestra el manejo de errores de red.
 flutter test
 flutter analyze
 ```
+
+Ambos corren automáticamente en CI ([GitHub Actions](.github/workflows/ci.yml))
+en cada push y pull request a `main` — sin secretos ni API key: ningún test
+llama a RAWG de verdad, todos mockean la capa de repositorio.
 
 76 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
