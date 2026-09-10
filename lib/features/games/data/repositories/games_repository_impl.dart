@@ -17,15 +17,12 @@ class GamesRepositoryImpl implements GamesRepository {
     String? genre,
   }) async {
     try {
-      final games = await _remoteDataSource.fetchGames(
+      final result = await _remoteDataSource.fetchGames(
         page: page,
         search: search,
         genre: genre,
       );
-      // RAWG doesn't hand us a cheap "is this the last page" flag here, so a
-      // short page is the signal: if it came back full, there's probably more.
-      final hasMore = games.length == GamesRemoteDataSource.pageSize;
-      return Ok(GamesPage(games: games, hasMore: hasMore));
+      return Ok(GamesPage(games: result.games, hasMore: result.hasMore));
     } on DioException catch (error) {
       return Err(_mapError(error));
     } catch (_) {

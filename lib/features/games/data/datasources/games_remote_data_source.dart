@@ -6,11 +6,10 @@ class GamesRemoteDataSource {
   const GamesRemoteDataSource(this._dio);
   final Dio _dio;
 
-  /// How many results RAWG returns per page — also the number the
-  /// repository compares against to guess whether another page exists.
+  /// How many results to ask RAWG for per page.
   static const pageSize = 20;
 
-  Future<List<GameModel>> fetchGames({
+  Future<({List<GameModel> games, bool hasMore})> fetchGames({
     int page = 1,
     String? search,
     String? genre,
@@ -25,10 +24,20 @@ class GamesRemoteDataSource {
       },
     );
 
-    final results = (response.data?['results'] as List<dynamic>?) ?? [];
-    return results
-        .map((json) => GameModel.fromJson(json as Map<String, dynamic>))
+    return parseGamesResponse(response.data ?? {});
+  }
+
+  /// Pulled out as a pure function of a JSON map (no Dio needed) so it's
+  /// directly testable — RAWG's response is standard DRF pagination: a
+  /// `next` field that's a URL when another page exists, `null` on the
+  /// last one. That's the real, free signal, instead of guessing from
+  /// whether the page happened to come back full.
+  static ({List<GameModel> games, bool hasMore}) parseGamesResponse(Map<String, dynamic> json) {
+    final results = (json['results'] as List<dynamic>?) ?? [];
+    final games = results
+        .map((entry) => GameModel.fromJson(entry as Map<String, dynamic>))
         .toList();
+    return (games: games, hasMore: json['next'] != null);
   }
 
   Future<GameModel> fetchGameDetail(int id) async {
