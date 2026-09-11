@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:questlog/core/clock.dart';
 import 'package:questlog/core/result.dart';
 import 'package:questlog/features/diary/domain/entities/diary_entry.dart';
 import 'package:questlog/features/diary/domain/entities/play_status.dart';
@@ -7,7 +8,7 @@ import 'package:questlog/features/diary/domain/usecases/save_diary_entry.dart';
 import 'package:questlog/features/diary/presentation/cubit/diary_state.dart';
 
 class DiaryCubit extends Cubit<DiaryState> {
-  DiaryCubit(this._getDiaryEntry, this._saveDiaryEntry, this._gameId)
+  DiaryCubit(this._getDiaryEntry, this._saveDiaryEntry, this._gameId, this._clock)
     : super(const DiaryLoading()) {
     _ready = _load();
   }
@@ -15,6 +16,7 @@ class DiaryCubit extends Cubit<DiaryState> {
   final GetDiaryEntry _getDiaryEntry;
   final SaveDiaryEntry _saveDiaryEntry;
   final int _gameId;
+  final Clock _clock;
 
   // Guards against a real race: if a status/rating/note update comes in
   // before the initial read finishes, awaiting this first makes sure it's
@@ -55,8 +57,8 @@ class DiaryCubit extends Cubit<DiaryState> {
 
     final base =
         current.entry ??
-        DiaryEntry(gameId: _gameId, status: PlayStatus.backlog, updatedAt: DateTime.now());
-    final updated = update(base).copyWith(updatedAt: DateTime.now());
+        DiaryEntry(gameId: _gameId, status: PlayStatus.backlog, updatedAt: _clock.now());
+    final updated = update(base).copyWith(updatedAt: _clock.now());
 
     emit(DiaryLoaded(updated, isSaving: true));
     final result = await _saveDiaryEntry(updated);

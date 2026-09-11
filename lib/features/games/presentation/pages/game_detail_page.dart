@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:questlog/app/injection.dart';
 import 'package:questlog/app/theme.dart';
+import 'package:questlog/core/clock.dart';
 import 'package:questlog/core/widgets/fading_network_image.dart';
 import 'package:questlog/features/diary/domain/usecases/get_diary_entry.dart';
 import 'package:questlog/features/diary/domain/usecases/save_diary_entry.dart';
@@ -24,7 +25,8 @@ class GameDetailPage extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => GameDetailCubit(getIt<GetGameDetail>(), game)),
         BlocProvider(
-          create: (_) => DiaryCubit(getIt<GetDiaryEntry>(), getIt<SaveDiaryEntry>(), game.id),
+          create: (_) =>
+              DiaryCubit(getIt<GetDiaryEntry>(), getIt<SaveDiaryEntry>(), game.id, getIt<Clock>()),
         ),
       ],
       child: const _GameDetailView(),

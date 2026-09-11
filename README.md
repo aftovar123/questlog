@@ -136,7 +136,7 @@ Ambos corren automáticamente en CI ([GitHub Actions](.github/workflows/ci.yml))
 en cada push y pull request a `main` — sin secretos ni API key: ningún test
 llama a RAWG de verdad, todos mockean la capa de repositorio.
 
-91 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
+92 tests en 5 capas: 5 de `core/network` (`SessionExpiredNotifier` y
 `SessionAwareErrorInterceptor` — que detecta un 401 con un `DioException`
 construido a mano, sin depender de una llamada de red real ni de un
 navegador, que puede ocultar el código de estado real por CORS), 8 de
@@ -151,16 +151,18 @@ varias llamadas rápidas colapsan en una sola búsqueda con el último valor,
 y que un `loadGames` inmediato cancela un debounce pendiente), 2 de
 `GenresCubit` (incluyendo que un fallo se
 degrada a una lista vacía, no a un estado de error), 5 de parseo de
-`GameModel`/`GenreModel.fromJson`, 28 de `diary`
+`GameModel`/`GenreModel.fromJson`, 29 de `diary`
 (casos de uso y `DiaryCubit`/`DiaryListCubit` mockeados con mocktail/bloc_test
 — incluyendo que `saveReview` guarda calificación y nota juntas en un solo
 guardado, que una entrada cuya enriquecida de juego falla se degrada en vez
 de romper la lista, que `DiaryListCubit.load()` descarta una respuesta
 vieja que llega tarde (mismo patrón "restartable" que `GamesCubit`), y que
 `delete()` quita solo la entrada correcta o deja la lista intacta si falla
-—, más el repositorio contra una instancia real de Hive vía
-`hive_test` — ahí sí importa probar la persistencia en sí, no un mock de
-ella), 11 de estadísticas (7 de `computeDiaryStats` — función pura, incluyendo
+—, que el guardado sella `updatedAt` con lo que lee un `Clock` inyectado
+y no con la hora real del sistema (así una prueba lo fija en vez de tener
+que asumir el momento exacto en que corrió) —, más el repositorio contra
+una instancia real de Hive vía `hive_test` — ahí sí importa probar la
+persistencia en sí, no un mock de ella), 11 de estadísticas (7 de `computeDiaryStats` — función pura, incluyendo
 que una calificación sin poner no cuenta como 0 y que una entrada cuya
 enriquecida de juego falló se ignora para género sin romper el cálculo — y 4
 de `StatsCubit` con `bloc_test`, cubriendo vacío/éxito/error/reentrada), y 15
