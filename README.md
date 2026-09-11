@@ -100,6 +100,15 @@ y pull request a `main` — sin secretos ni API key: ningún test llama a RAWG
 de verdad, todos mockean la capa de repositorio.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {
+  "pie1": "#4a3aa7",
+  "pie2": "#e34948",
+  "pie3": "#2a78d6",
+  "pie4": "#eb6834",
+  "pie5": "#1baf7a",
+  "pie6": "#eda100",
+  "pie7": "#e87ba4"
+}}}%%
 pie showData
     title 92 tests, por capa
     "diary" : 29
