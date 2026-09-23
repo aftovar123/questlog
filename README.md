@@ -28,13 +28,19 @@ lib/
                   # y widgets compartidos entre features
   features/
     games/
-      domain/       # Game/Genre (entidades), GamesRepository (contrato), GetGames/GetGameDetail/GetGenres (casos de uso)
-      data/         # GameModel/GenreModel, GamesRemoteDataSource (RAWG), GamesRepositoryImpl
-      presentation/ # GamesCubit / GameDetailCubit + estados, páginas y widgets
+      domain/       # Game/Genre (entidades), GamesRepository (contrato),
+                    # GetGames/GetGameDetail/GetGenres (casos de uso)
+      data/         # GameModel/GenreModel, GamesRemoteDataSource (RAWG),
+                    # GamesRepositoryImpl
+      presentation/ # GamesCubit / GameDetailCubit + estados, páginas y
+                    # widgets
     diary/
-      domain/       # PlayStatus, DiaryEntry (entidad), DiaryRepository (contrato), casos de uso
-      data/         # DiaryEntryModel, DiaryLocalDataSource (Hive), DiaryRepositoryImpl
-      presentation/ # DiaryCubit/DiaryListCubit + estados, DiarySection, la pantalla "Mi diario"
+      domain/       # PlayStatus, DiaryEntry (entidad), DiaryRepository
+                    # (contrato), casos de uso
+      data/         # DiaryEntryModel, DiaryLocalDataSource (Hive),
+                    # DiaryRepositoryImpl
+      presentation/ # DiaryCubit/DiaryListCubit + estados, DiarySection,
+                    # la pantalla "Mi diario"
   l10n/           # app_en.arb / app_es.arb + código generado (gen-l10n)
 ```
 
