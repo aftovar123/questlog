@@ -132,3 +132,8 @@ Lo que vale la pena señalar:
 - `updatedAt` se sella con lo que lee un `Clock` inyectado, no con
   `DateTime.now()` directo — así un test lo fija a un instante exacto en vez
   de asumir el momento justo en que corrió.
+
+
+## Licencia
+
+© 2026 Andrés Tovar Sandoval. Todos los derechos reservados. El código se publica solo como portafolio, para consulta y evaluación; no se permite copiarlo, modificarlo, redistribuirlo ni usarlo sin autorización escrita del autor. Ver [LICENSE](LICENSE).
